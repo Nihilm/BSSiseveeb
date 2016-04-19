@@ -1,0 +1,58 @@
+﻿td, th {
+    width: 2%;
+}
+
+body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    max-width: 280px;
+}
+
+.vacation {
+    background-color: #52D017;
+}
+
+#month {
+    display: inline-block;
+    margin: 10px;
+    padding: 0;
+}
+
+#calendarControls {
+    text-align: center;
+}
+
+.previous {
+    display: inline-block;
+}
+
+.next {
+    display: inline-block;
+}
+
+#calendar {
+    table-layout: fixed;
+}
+
+#calendar .firstColumn {
+    width: 7%;
+}

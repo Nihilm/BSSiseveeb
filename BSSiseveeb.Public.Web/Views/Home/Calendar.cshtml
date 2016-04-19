@@ -1,0 +1,22 @@
+﻿@{
+    ViewBag.Title = "Puhkuste Kalender";
+}
+
+<h2>Puhkuste Kalender</h2>
+<div id="calendarControls">
+    <button onclick="lowerMonth()" class="previous"><span aria-hidden="true">&larr;</span></button>
+    <h3 id="month"></h3>
+    <button onclick="raiseMonth()" class="next"><span aria-hidden="true">&rarr;</span></button>
+</div>
+<table id="calendar" class="table table-bordered">
+    <thead>
+    <tr id="mainRow">
+    </tr>
+    </thead>
+    <tbody id="calendarBody">
+    </tbody>
+</table>
+
+@section scripts {
+    @Scripts.Render("~/Scripts/Calendar.js")
+}
