@@ -13,7 +13,7 @@ namespace BSSiseveeb.Core.Domain
     public class ApplicationUser : IdentityUser
     {
         public int EmployeeId { get; set; }
-        public int RoleId { get; set; }
+        public string RoleId { get; set; }
         public string Messages { get; set; }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)

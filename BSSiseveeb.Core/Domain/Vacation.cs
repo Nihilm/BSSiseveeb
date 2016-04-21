@@ -18,6 +18,7 @@ namespace BSSiseveeb.Core.Domain
     public enum VacationStatus
     {
         Approved,
-        Declined
+        Declined,
+        Pending
     }
 }

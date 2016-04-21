@@ -1,12 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using System.Web.Http;
 using BSSiseveeb.Core.Contracts.Repositories;
 using BSSiseveeb.Core.Domain;
+using BSSiseveeb.Public.Web.Attributes;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
+
+
 
 namespace BSSiseveeb.Public.Web.Controllers.Api
 {
+    [AuthorizeLevel1]
     public class CalendarController : ApiController
     {
         public IVacationRepository VacationRepository { get; set; }
@@ -27,6 +34,34 @@ namespace BSSiseveeb.Public.Web.Controllers.Api
         public IEnumerable<Employee> GetEmployees()
         {
             return EmployeeRepository.ToList();
-        }  
+        }
+
+        [HttpGet]
+        public int SetVacation(DateTime start, DateTime end)
+        {
+            var currentUser =
+                HttpContext.Current.GetOwinContext()
+                    .GetUserManager<ApplicationUserManager>()
+                    .FindById(User.Identity.GetUserId())
+                    .EmployeeId;
+
+            int days = (int)end.Subtract(start).TotalDays;
+
+            if (start > end)
+            {
+                return 1;
+            }
+            
+            VacationRepository.AddIfNew(new Vacation()
+            {
+                StartDate = start,
+                EndDate = end,
+                Status = VacationStatus.Pending,
+                EmployeeId = currentUser,
+                Days = days,
+            });
+            VacationRepository.Commit();
+            return 0;
+        }
     }
 }

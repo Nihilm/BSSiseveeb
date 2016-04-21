@@ -2,21 +2,40 @@
     ViewBag.Title = "Puhkuste Kalender";
 }
 
-<h2>Puhkuste Kalender</h2>
-<div id="calendarControls">
-    <button onclick="lowerMonth()" class="previous"><span aria-hidden="true">&larr;</span></button>
-    <h3 id="month"></h3>
-    <button onclick="raiseMonth()" class="next"><span aria-hidden="true">&rarr;</span></button>
-</div>
-<table id="calendar" class="table table-bordered">
-    <thead>
-    <tr id="mainRow">
-    </tr>
-    </thead>
-    <tbody id="calendarBody">
-    </tbody>
-</table>
+@if (Request.IsAuthenticated) { 
+    <h2>Puhkuste Kalender</h2>
+    <div id="calendarControls">
+        <button onclick="lowerMonth()" class="previous btn btn-default"><span aria-hidden="true">&larr;</span></button>
+        <h3 id="month"></h3>
+        <button onclick="raiseMonth()" class="next btn btn-default"><span aria-hidden="true">&rarr;</span></button>
+    </div>
+    <table id="calendar" class="table table-bordered">
+        <thead>
+        <tr id="mainRow">
+        </tr>
+        </thead>
+        <tbody id="calendarBody">
+        </tbody>
+    </table>
 
-@section scripts {
-    @Scripts.Render("~/Scripts/Calendar.js")
+    <div>
+        <h4>Sisesta oma soovitud puhkuse aeg</h4>
+        <div class="input-append date" id="dp1" data-date="" data-date-format="yyyy-mm-dd">
+            <label for="algus">Algus:</label>
+            <input id="algus" class="span2" size="16" type="text" value="" onclick="showDatePicker('#dp1')">
+            <span class="add-on"><i class="icon-th"></i></span>
+        </div>
+        <div class="input-append date" id="dp2" data-date="" data-date-format="yyyy-mm-dd">
+            <label for="lõpp">Lõpp:</label>
+            <input id="lõpp" class="span2" size="16" type="text" value="" onclick="showDatePicker('#dp2')">
+            <span class="add-on"><i class="icon-th"></i></span>
+        </div>
+        <input type="submit" class="btn btn-submit" value="Saada" onClick="sendVacationDate()">
+        <h4 id="status"></h4>
+    </div>
+
+    @section scripts {
+        @Scripts.Render("~/Scripts/calendar.js")
+        @Scripts.Render("~/Scripts/bootstrap-datepicker.js")
+    }
 }

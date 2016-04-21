@@ -5,3 +5,18 @@
 
 <h2>Töötajad</h2>
 
+<table id="workers" class="table table-bordered">
+    <thead>
+    <tr id="mainRow">
+        <th>Nimi</th>
+        <th>Sünnipäev</th>
+        <th>Telefon</th>
+        <th>E-mail</th>
+    </tr>
+    </thead>
+    <tbody id="workersBody"></tbody>
+</table>
+
+@section scripts {
+    @Scripts.Render("~/Scripts/workers.js")
+}

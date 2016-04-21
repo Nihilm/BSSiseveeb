@@ -33,7 +33,9 @@ textarea {
 
 #month {
     display: inline-block;
-    margin: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 10px;
     padding: 0;
 }
 
@@ -43,10 +45,12 @@ textarea {
 
 .previous {
     display: inline-block;
+    margin-bottom: 10px;
 }
 
 .next {
     display: inline-block;
+    margin-bottom: 10px;
 }
 
 #calendar {

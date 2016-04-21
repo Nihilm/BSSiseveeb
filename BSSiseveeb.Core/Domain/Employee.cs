@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 using Sparkling.DataInterfaces.Domain;
@@ -15,5 +16,6 @@ namespace BSSiseveeb.Core.Domain
         public DateTime? ContractEnd { get; set; }
         public string PhoneNumber { get; set; }
         public int VacationDays { get; set; }
+        public string Email { get; set; }
     }
 }

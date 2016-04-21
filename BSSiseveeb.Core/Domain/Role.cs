@@ -11,11 +11,6 @@ namespace BSSiseveeb.Core.Domain
 {
     public class Role : IdentityRole
     {
-       /* public Role()
-        {
-            Rights.HasFlag(AccessRights.Level1);
-        }*/
-
         public AccessRights Rights { get; set; }
     }
 
@@ -31,3 +26,4 @@ namespace BSSiseveeb.Core.Domain
         All = Level1 | Level2 | Level3 | Level4 | Level5
     }
 }
+
