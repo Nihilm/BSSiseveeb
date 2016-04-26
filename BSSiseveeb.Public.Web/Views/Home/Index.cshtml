@@ -1,9 +1,29 @@
-﻿@{
+﻿@using BSSiseveeb.Public.Web.Models
+@using Castle.Core.Internal
+@model IndexViewModel
+
+@{
     ViewBag.Title = "Index";
 }
 
 <div class="jumbotron">
     <h1>Brightspark Siseveeb</h1>
+</div>
+
+<div>
+    @if (Request.IsAuthenticated) {
+        <ul id="todaybirthday">
+            <li><h4>Tänaseid sünnipäevalised:</h4></li>
+            @foreach (var employee in @Model.Employees)
+            {
+                <li>@employee.Name</li>
+            }
+            @if (@Model.Employees.IsNullOrEmpty())
+            {
+                <li>Täna pole kellegi sünnipäev</li>
+            }
+        </ul>
+    }
 </div>
 
 <div class="row">
@@ -12,3 +32,5 @@
         <p>Sisu osa</p>
     </div>
 </div>
+
+@Scripts.Render("~/Scripts/general.js")

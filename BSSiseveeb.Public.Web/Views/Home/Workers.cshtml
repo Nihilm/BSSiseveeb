@@ -1,8 +1,11 @@
-﻿
+﻿@using BSSiseveeb.Public.Web.Models
+@model WorkersViewModel
+
+
 @{
     ViewBag.Title = "Töötajad";
 }
-
+    
 <h2>Töötajad</h2>
 
 <table id="workers" class="table table-bordered">
@@ -14,9 +17,11 @@
         <th>E-mail</th>
     </tr>
     </thead>
-    <tbody id="workersBody"></tbody>
+    <tbody id="workersBody">
+        @Html.DisplayFor(e => e.Employees)
+    </tbody>
 </table>
 
 @section scripts {
-    @Scripts.Render("~/Scripts/workers.js")
+    @Scripts.Render("~/Scripts/general.js")
 }

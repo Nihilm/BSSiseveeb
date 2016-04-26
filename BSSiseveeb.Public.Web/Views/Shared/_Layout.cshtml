@@ -27,7 +27,11 @@
                         <li>@Html.ActionLink("Puhkuse Kalender", "Calendar", "Home")</li>
                         <li>@Html.ActionLink("Töötajad", "Workers", "Home")</li>
                         <li>@Html.ActionLink("Töömaterjalid", "Requests", "Home")</li>
-                        <li>@Html.ActionLink("Admin", "Admin", "Home")</li>
+
+                        if (User.IsInRole("Administrator"))
+                        {
+                            <li> @Html.ActionLink("Admin", "Index", "Admin")</li>
+                        }
                     }
                 </ul>
                 @Html.Partial("_LoginPartial")

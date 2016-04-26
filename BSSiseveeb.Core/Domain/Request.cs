@@ -15,6 +15,7 @@ namespace BSSiseveeb.Core.Domain
     public enum RequestStatus
     {
         Confirmed,
-        Declined
+        Declined,
+        Pending
     }
 }

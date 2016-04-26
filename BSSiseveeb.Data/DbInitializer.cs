@@ -30,12 +30,23 @@ namespace BSSiseveeb.Data
             _ctx.Employees.Add(new Employee()
             {
                 Name = "Testija kaks",
-                Birthdate = new DateTime(1993, 7, 25),
+                Birthdate = new DateTime(1993, 4, 25),
                 ContractStart = new DateTime(2016, 2, 14),
                 ContractEnd = new DateTime(2016, 5, 14),
                 PhoneNumber = "+37253489161",
                 VacationDays = 14,
                 Email = "tester@test.ee"
+            });
+
+            _ctx.Employees.Add(new Employee()
+            {
+                Name = "Testija kolm",
+                Birthdate = new DateTime(1993, 4, 25),
+                ContractStart = new DateTime(2016, 2, 14),
+                ContractEnd = new DateTime(2016, 5, 14),
+                PhoneNumber = "+37253489161",
+                VacationDays = 14,
+                Email = "tester3@test.ee"
             });
 
             var adminRole = new Role

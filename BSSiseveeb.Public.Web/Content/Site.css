@@ -60,3 +60,13 @@ textarea {
 #calendar .firstColumn {
     width: 7%;
 }
+
+#todaybirthday {
+    float: right;
+    list-style-type: none;
+    text-align: right;
+}
+
+.form-control {width:120px;}
+.popover {max-width:400px;}
+.dropdown-menu{ z-index: 1025;}

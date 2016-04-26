@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using BSSiseveeb.Core.Domain;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
 
@@ -7,6 +9,7 @@ namespace BSSiseveeb.Public.Web.Models
 {
     public class IndexViewModel
     {
+        public List<Employee> Employees { get; set; }
         public bool HasPassword { get; set; }
         public IList<UserLoginInfo> Logins { get; set; }
         public string PhoneNumber { get; set; }
@@ -82,5 +85,12 @@ namespace BSSiseveeb.Public.Web.Models
     {
         public string SelectedProvider { get; set; }
         public ICollection<System.Web.Mvc.SelectListItem> Providers { get; set; }
+    }
+
+    public class ModifyVacationViewModel
+    {
+        public int EmployeeId { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
     }
 }

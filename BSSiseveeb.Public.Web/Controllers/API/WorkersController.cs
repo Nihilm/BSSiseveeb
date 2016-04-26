@@ -1,21 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Web.Http;
-using BSSiseveeb.Core.Contracts.Repositories;
-using BSSiseveeb.Core.Domain;
+﻿using BSSiseveeb.Core.Domain;
+using BSSiseveeb.Public.Web.Attributes;
 
 namespace BSSiseveeb.Public.Web.Controllers.API
 {
-
-    public class WorkersController : ApiController
+    [AuthorizeLevel(AccessRights.Level1)]
+    public class WorkersController : BaseApiController
     {
-
-        public IEmployeeRepository EmployeeRepository { get; set; }
-
-        [HttpGet]
-        public IEnumerable<Employee> GetEmployees()
-        {
-            return EmployeeRepository.ToList();
-        }
     }
 }
