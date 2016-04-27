@@ -10,11 +10,13 @@ namespace BSSiseveeb.Core.Domain
         public int Days { get; set; }
         public int EmployeeId { get; set; }
         public VacationStatus Status { get; set; }
+        public string Comments { get; set; }
     }
     public enum VacationStatus
     {
         Approved,
         Declined,
-        Pending
+        Pending,
+        Retired
     }
 }

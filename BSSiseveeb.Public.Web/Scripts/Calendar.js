@@ -5,6 +5,8 @@ var datepickers = ["#dp1", "#dp2"];
 var $month = $("#month");
 var $mainRow = $("#mainRow");
 var $calendarBody = $("#calendarBody");
+var $comment = $("#comment");
+var $myVacations = $("#myVacationsBody");
 var employees;
 
 $(document).ready(function () {
@@ -15,6 +17,7 @@ $(document).ready(function () {
         getCalendar();
     });
     updateHeader();
+    drawMyVacations();
 
     $.each(datepickers, function (index, picker) {
         var checkin = $(picker).datepicker({
@@ -117,16 +120,45 @@ function drawCalendar() {
 function sendVacationDate() {
     var start = new Date($("#dp1").data().date);
     var end = new Date($("#dp2").data().date);
-
-    $.post('/API/Calendar/SetVacation', { start: start.toISOString(), end: end.toISOString() })
+    var comment = $comment.val();
+    console.log(comment);
+    $.post('/API/Calendar/SetVacation', { Comment: comment, Start: start.toISOString(), End: end.toISOString() })
         .success(function () {
             $("#status").empty().append("Teie request on edastatud");
             $("#algus").val('');
             $("#lõpp").val('');
+            $comment.val('');
             $("#dp1").removeData();
             $("#dp2").removeData();
+            drawMyVacations();
         })
         .error(function () {
             $("#status").empty().append("Midagi Läks valesti");
+        });
+}
+
+function drawMyVacations() {
+    $myVacations.empty();
+    $.get('/API/Calendar/GetMyVacation')
+        .done(function(data) {
+            $.each(data, function(key, item) {
+                var start = dateFormat(new Date(item.StartDate));
+                var end = dateFormat(new Date(item.EndDate));
+                var status = "Approved";
+                if (!item.Status == 0) {
+                    status = "Pending";
+                }
+                $myVacations.append('<tr><td>' + start + '</td>' +
+                    '<td>' + end + '</td>' +
+                    '<td>' + status + '</td>' +
+                    '<td><input value="Cancel" class="btn btn-submit" type="button" onclick="cancelVacation(' + item.Id + ')"></td></tr>');
+            });
+        });
+}
+
+function cancelVacation(id) {
+    $.post('/API/Calendar/CancelVacation', { Id: id })
+        .success(function() {
+            drawMyVacations();
         });
 }

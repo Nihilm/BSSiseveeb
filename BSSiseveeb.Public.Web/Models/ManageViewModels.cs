@@ -9,6 +9,7 @@ namespace BSSiseveeb.Public.Web.Models
 {
     public class IndexViewModel
     {
+        public List<string> Vacations { get; set; } 
         public List<Employee> Employees { get; set; }
         public bool HasPassword { get; set; }
         public IList<UserLoginInfo> Logins { get; set; }

@@ -12,6 +12,7 @@ namespace BSSiseveeb.Public.Web.Models
             public int Id { get; set; }
             public DateTime Start { get; set; }
             public DateTime End { get; set; }
+            public string Comment { get; set; }
         }
 
         public class GeneralIdModel

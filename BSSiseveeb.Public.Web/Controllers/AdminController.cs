@@ -10,9 +10,9 @@ using BSSiseveeb.Public.Web.Models;
 
 namespace BSSiseveeb.Public.Web.Controllers
 {
-    public class AdminController : Controller
+    public class AdminController : BaseController
     {
-        [AuthorizeLevel(AccessRights.Level5)]
+        [AuthorizeLevel(AccessRights.Level4)]
         public ActionResult Index()
         {
             return View();

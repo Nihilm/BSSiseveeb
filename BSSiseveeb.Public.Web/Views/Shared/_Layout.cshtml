@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNet.Identity
+
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -28,7 +30,7 @@
                         <li>@Html.ActionLink("Töötajad", "Workers", "Home")</li>
                         <li>@Html.ActionLink("Töömaterjalid", "Requests", "Home")</li>
 
-                        if (User.IsInRole("Administrator"))
+                        if (User.IsInRole("Administrator") || User.IsInRole("RequestHandler"))
                         {
                             <li> @Html.ActionLink("Admin", "Index", "Admin")</li>
                         }

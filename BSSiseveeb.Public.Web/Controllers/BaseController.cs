@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using BSSiseveeb.Core.Contracts.Repositories;
+using BSSiseveeb.Core.Domain;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 
 namespace BSSiseveeb.Public.Web.Controllers
@@ -13,6 +16,9 @@ namespace BSSiseveeb.Public.Web.Controllers
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
         private ApplicationRoleManager _roleManager;
+        public IEmployeeRepository EmployeeRepository { get; set; }
+        public IVacationRepository VacationRepository { get; set; }
+        public IRequestRepository RequestRepository { get; set; }
 
         public ApplicationSignInManager SignInManager
         {
@@ -59,6 +65,13 @@ namespace BSSiseveeb.Public.Web.Controllers
             }
 
             base.Dispose(disposing);
+        }
+
+        public ApplicationUser CurrentUser()
+        {
+            return HttpContext.GetOwinContext()
+                    .GetUserManager<ApplicationUserManager>()
+                    .FindById(User.Identity.GetUserId());
         }
     }
 }

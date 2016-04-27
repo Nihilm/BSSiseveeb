@@ -1,19 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Http;
 using System.Web.WebPages;
-using BSSiseveeb.Core.Contracts.Repositories;
 using BSSiseveeb.Core.Domain;
 using BSSiseveeb.Public.Web.Attributes;
 using BSSiseveeb.Public.Web.Models;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
 
 namespace BSSiseveeb.Public.Web.Controllers.API
 {
-    [AuthorizeLevel(AccessRights.Level1)]
     public class RequestsController : BaseApiController
     {
         [HttpPost]
@@ -27,11 +20,7 @@ namespace BSSiseveeb.Public.Web.Controllers.API
                 return BadRequest();
             }
 
-            var currentUser =
-                HttpContext.Current.GetOwinContext()
-                    .GetUserManager<ApplicationUserManager>()
-                    .FindById(User.Identity.GetUserId())
-                    .EmployeeId;
+            var currentUser = CurrentUser().EmployeeId;
 
             RequestRepository.AddIfNew(new Request()
             {

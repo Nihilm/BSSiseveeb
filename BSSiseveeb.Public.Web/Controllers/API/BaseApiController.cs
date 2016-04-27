@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
 using BSSiseveeb.Core.Contracts.Repositories;
 using BSSiseveeb.Core.Domain;
-using BSSiseveeb.Data.Repositories;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
 
 
 namespace BSSiseveeb.Public.Web.Controllers.API
@@ -20,6 +20,13 @@ namespace BSSiseveeb.Public.Web.Controllers.API
         public IEnumerable<Employee> GetEmployees()
         {
             return EmployeeRepository.ToList();
+        }
+
+        public ApplicationUser CurrentUser()
+        {
+            return HttpContext.Current.GetOwinContext()
+                    .GetUserManager<ApplicationUserManager>()
+                    .FindById(User.Identity.GetUserId());
         }
     }
 }

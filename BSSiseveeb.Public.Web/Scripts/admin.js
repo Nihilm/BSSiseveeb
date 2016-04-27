@@ -15,51 +15,20 @@ $(document).ready(function () {
     drawConfirmedVacations();
 });
 
-function hideAllPopovers() {
-    $('.modify').each(function() {
-        $(this).popover('hide');
-    });
-    $('.datepicker').each(function() {
-        $(this).remove();
-    });
-}
-
-function approveVacation(id) {
-    $.post('/API/AdminApi/ApproveVacation', { Id: id })
-        .success(function() {
-            $vacations.empty();
-            drawVacations();
-            $confirmedVacations.empty();
-            drawConfirmedVacations();
-            $vacationStatus.empty().append("Tehing on lõpuni viidud");
-        })
-        .error(function() {
-            $vacationStatus.empty().append("Midagi läks Valesti");
-        });
-}
-
-function declineVacation(id) {
-    $.post('/API/AdminApi/DeclineVacation', { Id: id })
-        .success(function () {
-            $vacations.empty();
-            drawVacations();
-            $confirmedVacations.empty();
-            drawConfirmedVacations();
-            $vacationStatus.empty().append("Tehing on lõpuni viidud");
-        })
-        .error(function(){
-            $vacationStatus.empty().append("Midagi läks Valesti");
-        });
-}
 
 function drawVacations() {
     $.get('/API/AdminApi/GetPendingVacations').done(function (data) {
         $.each(data, function (key, item) {
             var start = dateFormat(new Date(item.StartDate));
             var end = dateFormat(new Date(item.EndDate));
+            var comment = item.Comments;
+            if (comment == null) {
+                comment = "";
+            }
             $vacations.append('<tr><td class="name">' + item.EmployeeId + '</td>' +
                 '<td>' + start + '</td>' +
                 '<td>' + end + '</td>' +
+                '<td><p>' + comment + '</p></td>' +
                 '<td><input type="submit" class="btn btn-submit" value="Approve" onClick="approveVacation(' + item.Id + ')">' +
                 '<input type="submit" class="btn btn-submit" value="Decline" onClick="declineVacation(' + item.Id + ')"></td>' +
                 '</tr>');
@@ -68,14 +37,47 @@ function drawVacations() {
     });
 }
 
+function approveVacation(id) {
+    $.post('/API/AdminApi/ApproveVacation', { Id: id })
+        .success(function () {
+            $vacations.empty();
+            drawVacations();
+            $confirmedVacations.empty();
+            drawConfirmedVacations();
+            $vacationStatus.empty().append("Tehing on lõpuni viidud");
+        })
+        .error(function () {
+            $vacationStatus.empty().append("Midagi läks Valesti");
+        });
+}
+
+function declineVacation(id) {
+    $.post('/API/AdminApi/DeleteVacation', { Id: id })
+        .success(function () {
+            $vacations.empty();
+            drawVacations();
+            $confirmedVacations.empty();
+            drawConfirmedVacations();
+            $vacationStatus.empty().append("Tehing on lõpuni viidud");
+        })
+        .error(function () {
+            $vacationStatus.empty().append("Midagi läks Valesti");
+        });
+}
+
 function drawConfirmedVacations() {
     $.get('/API/AdminApi/GetConfirmedVacations').done(function(data) {
         $.each(data, function(key, item) {
             var start = dateFormat(new Date(item.StartDate));
             var end = dateFormat(new Date(item.EndDate));
+            var comment = item.Comments;
+            if (comment == null) {
+                comment = "";
+            }
             $confirmedVacations.append('<tr><td class="name">' + item.EmployeeId + '</td>' +
                 '<td>' + start + '</td>' +
                 '<td>' + end + '</td>' +
+                '<td><p>' + comment + '</p></td>' +
                 '<td><input id="Modify' + item.Id + '" value="Modify" data-placement="bottom" data-toggle="popover" data-title="Modify" data-container="body" type="button" data-html="true" class="btn btn-submit modify" onclick="">' +
                 '<input value="Delete" type="button" class="btn btn-submit" onclick="deleteVacation(' + item.Id + ')"</td>' +
                 '</tr>');
@@ -85,10 +87,41 @@ function drawConfirmedVacations() {
     });
 }
 
+function modifyVacation(id) {
+    var start = new Date($("#dpa" + id).data().date);
+    var end = new Date($("#dpl" + id).data().date);
+
+    $.post('/API/AdminApi/ModifyVacation', { Id: id, Start: start.toISOString(), End: end.toISOString() })
+        .success(function () {
+            $("#dpl" + id).removeData();
+            $("#dpa" + id).removeData();
+            hideAllPopovers();
+            isVisible = false;
+            $confirmedVacations.empty();
+            drawConfirmedVacations();
+            $confirmedVacationStatus.empty().append("Puhkus edukalt muudetud.");
+        })
+        .error(function () {
+            $confirmedVacationStatus.empty().append("Midagi läks valesti.");
+        });
+}
+
+function deleteVacation(id) {
+    $.post('/API/AdminApi/DeleteVacation', { Id: id })
+        .success(function () {
+            $confirmedVacations.empty();
+            drawConfirmedVacations();
+            $confirmedVacationStatus.empty().append("Puhkus edukalt kustutatud.");
+        })
+        .error(function () {
+            $confirmedVacationStatus.empty().append("Midagi läks valesti.");
+        });
+}
+
 function drawRequests() {
     $.get('/API/AdminApi/GetPendingRequests').done(function (data) {
         $.each(data, function(key, item) {
-            var timestamp = new Date(item.TimeStamp);
+            var timestamp = dateFormat(new Date(item.TimeStamp));
             $requests.append('<tr><td class="name">' + item.EmployeeId + '</td>' +
                 '<td>' + item.Req + '</td>' +
                 '<td>' + item.Description + '</td>' +
@@ -163,6 +196,17 @@ function formatPopover(id) {
             '</form>';
 }
 
+
+function hideAllPopovers() {
+    $('.modify').each(function () {
+        $(this).popover('hide');
+    });
+    $('.datepicker').each(function () {
+        $(this).remove();
+    });
+}
+
+
 function showDatePicker(dp) {
     $(dp).datepicker('show');
 
@@ -198,33 +242,5 @@ function initDatepicker(datepickers) {
     });
 }
 
-function modifyVacation(id) {
-    var start = new Date($("#dpa" + id).data().date);
-    var end = new Date($("#dpl" + id).data().date);
 
-    $.post('/API/AdminApi/ModifyVacation', { Id: id, Start: start.toISOString(), End: end.toISOString()  })
-        .success(function () {
-            $("#dpl" + id).removeData();
-            $("#dpa" + id).removeData();
-            hideAllPopovers();
-            isVisible = false;
-            $confirmedVacations.empty();
-            drawConfirmedVacations();
-            $("#confirmedVacationStatus").empty().append("Puhkus edukalt muudetud.");
-        })
-        .error(function () {
-            $("#confirmedVacationStatus").empty().append("Midagi läks valesti.");
-        });
-}
 
-function deleteVacation(id) {
-    $.post('/API/AdminApi/DeleteVacation', { Id: id })
-        .success(function () {
-            $confirmedVacations.empty();
-            drawConfirmedVacations();
-            $("#confirmedVacationStatus").empty().append("Puhkus edukalt kustutatud.");
-        })
-        .error(function () {
-            $("#confirmedVacationStatus").empty().append("Midagi läks valesti.");
-        });
-}

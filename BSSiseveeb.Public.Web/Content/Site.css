@@ -61,12 +61,25 @@ textarea {
     width: 7%;
 }
 
-#todaybirthday {
+.frontPageColumn {
     float: right;
     list-style-type: none;
     text-align: right;
 }
 
-.form-control {width:120px;}
+.row {
+    max-width: 800px;
+}
+
+#myVacations {
+    max-Width: 650px;
+    display: block;
+}
+
+#sisestaPuhkus {
+    display: block;
+}
+
+
 .popover {max-width:400px;}
 .dropdown-menu{ z-index: 1025;}

@@ -1,16 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Http;
 using BSSiseveeb.Core.Domain;
 using BSSiseveeb.Public.Web.Attributes;
 using BSSiseveeb.Public.Web.Models;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
-
-
-
 
 namespace BSSiseveeb.Public.Web.Controllers.API
 {
@@ -31,11 +25,7 @@ namespace BSSiseveeb.Public.Web.Controllers.API
         [HttpPost]
         public IHttpActionResult SetVacation(ApiControllerModels.VacationModel model)
         {
-            var currentUser =
-                HttpContext.Current.GetOwinContext()
-                    .GetUserManager<ApplicationUserManager>()
-                    .FindById(User.Identity.GetUserId())
-                    .EmployeeId;
+            var currentUser = CurrentUser().EmployeeId;
 
             int days = (int)model.End.Subtract(model.Start).TotalDays + 1;
 
@@ -43,7 +33,21 @@ namespace BSSiseveeb.Public.Web.Controllers.API
             {
                 return BadRequest();
             }
-            
+
+            var employee = EmployeeRepository.First(x => x.Id == currentUser);
+
+            if (employee.VacationDays - days < 0)
+            {
+                return BadRequest();
+            }
+
+            employee.VacationDays -= days;
+            EmployeeRepository.SaveOrUpdate(employee);
+            EmployeeRepository.Commit();
+
+
+            //TODO: Lisainfo väljale piirangud
+
             VacationRepository.AddIfNew(new Vacation()
             {
                 StartDate = model.Start,
@@ -51,10 +55,39 @@ namespace BSSiseveeb.Public.Web.Controllers.API
                 Status = VacationStatus.Pending,
                 EmployeeId = currentUser,
                 Days = days,
+                Comments = model.Comment
             });
             VacationRepository.Commit();
 
             return Ok();
         }
+
+        [HttpGet]
+        public List<Vacation> GetMyVacation()
+        {
+            var currentUser = CurrentUser();
+            var result = VacationRepository.Where(x => x.EmployeeId == currentUser.EmployeeId)
+                .Where(x => x.Status == VacationStatus.Approved || x.Status == VacationStatus.Pending).ToList();
+            return result;
+        }
+
+        [HttpPost]
+        public IHttpActionResult CancelVacation(ApiControllerModels.GeneralIdModel model)
+        {
+            var id = model.Id;
+            var vacation = VacationRepository.First(x => x.Id == id);
+            var currentUser = CurrentUser().EmployeeId;
+            var employee = EmployeeRepository.First(x => x.Id == currentUser);
+
+            employee.VacationDays += vacation.Days;
+            vacation.Status = VacationStatus.Declined;
+
+            EmployeeRepository.SaveOrUpdate(employee);
+            VacationRepository.SaveOrUpdate(vacation);
+
+            EmployeeRepository.Commit();
+            VacationRepository.Commit();
+            return Ok();
+        } 
     }
 }

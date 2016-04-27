@@ -10,8 +10,6 @@ $(document).ready(function () {
 function sendRequest() {
     var title = $title.val();
     var info = $info.val();
-    console.log(title);
-    console.log(info);
     $.post('/API/Requests/SetRequest', { Title: title, Info: info })
         .success(function() {
             $status.empty();

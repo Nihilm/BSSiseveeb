@@ -23,7 +23,7 @@ namespace BSSiseveeb.Data
                 ContractStart = new DateTime(2016, 2, 14),
                 ContractEnd = new DateTime(2016, 5, 14),
                 PhoneNumber = "+37253489161",
-                VacationDays = 14,
+                VacationDays = 28,
                 Email = "test@test.ee"
             });
 
@@ -34,7 +34,7 @@ namespace BSSiseveeb.Data
                 ContractStart = new DateTime(2016, 2, 14),
                 ContractEnd = new DateTime(2016, 5, 14),
                 PhoneNumber = "+37253489161",
-                VacationDays = 14,
+                VacationDays = 28,
                 Email = "tester@test.ee"
             });
 
@@ -45,7 +45,7 @@ namespace BSSiseveeb.Data
                 ContractStart = new DateTime(2016, 2, 14),
                 ContractEnd = new DateTime(2016, 5, 14),
                 PhoneNumber = "+37253489161",
-                VacationDays = 14,
+                VacationDays = 28,
                 Email = "tester3@test.ee"
             });
 
@@ -59,6 +59,12 @@ namespace BSSiseveeb.Data
             {
                 Name = "User",
                 Rights = AccessRights.Level1
+            };
+
+            var requestHandler = new Role()
+            {
+                Name = "RequestHandler",
+                Rights = AccessRights.Level1 | AccessRights.Level2 | AccessRights.Level3 | AccessRights.Level4 
             };
 
             var user = new ApplicationUser()
@@ -85,46 +91,32 @@ namespace BSSiseveeb.Data
                 LockoutEnabled = false,
                 UserName = "tester@test.ee",
                 SecurityStamp = Guid.NewGuid().ToString()
+            };
+
+            var user3 = new ApplicationUser()
+            {
+                EmployeeId = 3,
+                PasswordHash = _hasher.HashPassword("Password1"),
+                RoleId = requestHandler.Id,
+                Messages = "no",
+                Email = "tester3@test.ee",
+                EmailConfirmed = true,
+                LockoutEnabled = false,
+                UserName = "tester3@test.ee",
+                SecurityStamp = Guid.NewGuid().ToString()
 
             };
-            
+
             adminRole.Users.Add(new IdentityUserRole() {RoleId = adminRole.Id, UserId = user.Id});
-            userRole.Users.Add(new IdentityUserRole() { RoleId = userRole.Id, UserId = user2.Id});
+            userRole.Users.Add(new IdentityUserRole() {RoleId = userRole.Id, UserId = user2.Id});
+            requestHandler.Users.Add(new IdentityUserRole() {RoleId = requestHandler.Id, UserId = user3.Id});
 
             _ctx.Roles.Add(adminRole);
             _ctx.Roles.Add(userRole);
+            _ctx.Roles.Add(requestHandler);
             _ctx.Users.Add(user);
             _ctx.Users.Add(user2);
-
-
-            _ctx.Vacations.Add(new Vacation()
-            {
-                Days = 6,
-                EmployeeId = 1,
-                EndDate = new DateTime(2016, 4, 10),
-                StartDate = new DateTime(2016, 4, 5),
-                Status = VacationStatus.Approved
-            });
-
-            _ctx.Vacations.Add(new Vacation()
-            {
-                Days = 18,
-                EmployeeId = 2,
-                EndDate = new DateTime(2016, 4, 4),
-                StartDate = new DateTime(2016, 3, 18),
-                Status = VacationStatus.Approved
-            });
-
-            _ctx.Vacations.Add(new Vacation()
-            {
-                Days = 33,
-                EmployeeId = 1,
-                EndDate = new DateTime(2016, 2, 5),
-                StartDate = new DateTime(2016, 1, 4),
-                Status = VacationStatus.Approved
-            });
-
-
+            _ctx.Users.Add(user3);
 
             base.Seed(context);
         }
