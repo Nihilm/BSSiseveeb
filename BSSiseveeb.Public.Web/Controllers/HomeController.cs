@@ -16,20 +16,21 @@ namespace BSSiseveeb.Public.Web.Controllers
     public class HomeController : BaseController
     {
 
-        
-
         public ActionResult Index()
         {
             var employees = EmployeeRepository.Where(x => x.Birthdate.Month == DateTime.Now.Month && x.Birthdate.Day == DateTime.Now.Day).ToList();
             var vacations = new List<string>();
-            var repoVacations = VacationRepository.Where(x => x.StartDate.Month == DateTime.Now.Month || x.EndDate.Month == DateTime.Now.Month)
-                .Where(x => x.Status == VacationStatus.Approved)
-                .OrderBy(x => x.StartDate).ToList();
+            var repoVacations = VacationRepository
+                                    .Where(x => x.StartDate.Month == DateTime.Now.Month || x.EndDate.Month == DateTime.Now.Month)
+                                    .Where(x => x.Status == VacationStatus.Approved)
+                                    .OrderBy(x => x.StartDate).ToList();
+
             foreach (var vacation in repoVacations)
             {
                 var employee = EmployeeRepository.Single(x => x.Id == vacation.EmployeeId).Name;
                 vacations.Add(employee + " " + vacation.StartDate.ToString("d") + " - " + vacation.EndDate.ToString("d"));
             }
+
             return View(new IndexViewModel() {Employees = employees, Vacations = vacations });
         }
 

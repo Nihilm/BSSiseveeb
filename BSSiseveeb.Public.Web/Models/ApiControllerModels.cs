@@ -25,5 +25,7 @@ namespace BSSiseveeb.Public.Web.Models
             public string Title { get; set; }
             public string Info { get; set; }
         }
+
+
     }
 }

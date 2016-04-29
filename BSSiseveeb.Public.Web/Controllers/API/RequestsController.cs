@@ -20,7 +20,7 @@ namespace BSSiseveeb.Public.Web.Controllers.API
                 return BadRequest();
             }
 
-            var currentUser = CurrentUser().EmployeeId;
+            var currentUser = CurrentUser.EmployeeId;
 
             RequestRepository.AddIfNew(new Request()
             {

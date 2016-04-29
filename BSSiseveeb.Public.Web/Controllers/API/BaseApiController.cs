@@ -12,6 +12,8 @@ namespace BSSiseveeb.Public.Web.Controllers.API
 {
     public class BaseApiController : ApiController
     {
+        private ApplicationUserManager _userManager;
+        private ApplicationRoleManager _roleManager;
         public IVacationRepository VacationRepository { get; set; }
         public IEmployeeRepository EmployeeRepository { get; set; }
         public IRequestRepository RequestRepository { get; set; }
@@ -22,11 +24,40 @@ namespace BSSiseveeb.Public.Web.Controllers.API
             return EmployeeRepository.ToList();
         }
 
-        public ApplicationUser CurrentUser()
+        public string CurrentUserId => User.Identity.GetUserId();
+
+        public ApplicationUser CurrentUser
         {
-            return HttpContext.Current.GetOwinContext()
+            get
+            {
+                return HttpContext.Current.GetOwinContext()
                     .GetUserManager<ApplicationUserManager>()
-                    .FindById(User.Identity.GetUserId());
+                    .FindById(CurrentUserId);
+            }
+        }
+
+        public ApplicationUserManager UserManager
+        {
+            get
+            {
+                return _userManager ?? HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
+            }
+            private set
+            {
+                _userManager = value;
+            }
+        }
+
+        public ApplicationRoleManager RoleManager
+        {
+            get
+            {
+                return _roleManager ?? HttpContext.Current.GetOwinContext().GetUserManager<ApplicationRoleManager>();
+            }
+            private set
+            {
+                _roleManager = value;
+            }
         }
     }
 }

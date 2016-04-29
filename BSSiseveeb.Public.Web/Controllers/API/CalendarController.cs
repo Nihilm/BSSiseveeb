@@ -25,7 +25,7 @@ namespace BSSiseveeb.Public.Web.Controllers.API
         [HttpPost]
         public IHttpActionResult SetVacation(ApiControllerModels.VacationModel model)
         {
-            var currentUser = CurrentUser().EmployeeId;
+            var currentUser = CurrentUser.EmployeeId;
 
             int days = (int)model.End.Subtract(model.Start).TotalDays + 1;
 
@@ -65,8 +65,7 @@ namespace BSSiseveeb.Public.Web.Controllers.API
         [HttpGet]
         public List<Vacation> GetMyVacation()
         {
-            var currentUser = CurrentUser();
-            var result = VacationRepository.Where(x => x.EmployeeId == currentUser.EmployeeId)
+            var result = VacationRepository.Where(x => x.EmployeeId == CurrentUser.EmployeeId)
                 .Where(x => x.Status == VacationStatus.Approved || x.Status == VacationStatus.Pending).ToList();
             return result;
         }
@@ -74,9 +73,8 @@ namespace BSSiseveeb.Public.Web.Controllers.API
         [HttpPost]
         public IHttpActionResult CancelVacation(ApiControllerModels.GeneralIdModel model)
         {
-            var id = model.Id;
-            var vacation = VacationRepository.First(x => x.Id == id);
-            var currentUser = CurrentUser().EmployeeId;
+            var vacation = VacationRepository.First(x => x.Id == model.Id);
+            var currentUser = CurrentUser.EmployeeId;
             var employee = EmployeeRepository.First(x => x.Id == currentUser);
 
             employee.VacationDays += vacation.Days;

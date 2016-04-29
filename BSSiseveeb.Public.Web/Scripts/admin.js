@@ -18,21 +18,25 @@ $(document).ready(function () {
 
 function drawVacations() {
     $.get('/API/AdminApi/GetPendingVacations').done(function (data) {
-        $.each(data, function (key, item) {
-            var start = dateFormat(new Date(item.StartDate));
-            var end = dateFormat(new Date(item.EndDate));
-            var comment = item.Comments;
-            if (comment == null) {
-                comment = "";
-            }
-            $vacations.append('<tr><td class="name">' + item.EmployeeId + '</td>' +
-                '<td>' + start + '</td>' +
-                '<td>' + end + '</td>' +
-                '<td><p>' + comment + '</p></td>' +
-                '<td><input type="submit" class="btn btn-submit" value="Approve" onClick="approveVacation(' + item.Id + ')">' +
-                '<input type="submit" class="btn btn-submit" value="Decline" onClick="declineVacation(' + item.Id + ')"></td>' +
-                '</tr>');
-        });
+        if (data.Message) {
+            $vacationStatus.empty().append("Teil puuduvad õigused näha pending puhkusi.");
+        } else { 
+            $.each(data, function (key, item) {
+                var start = dateFormat(new Date(item.StartDate));
+                var end = dateFormat(new Date(item.EndDate));
+                var comment = item.Comments;
+                if (comment == null) {
+                    comment = "";
+                }
+                $vacations.append('<tr><td class="name">' + item.EmployeeId + '</td>' +
+                    '<td>' + start + '</td>' +
+                    '<td>' + end + '</td>' +
+                    '<td><p>' + comment + '</p></td>' +
+                    '<td><input type="submit" class="btn btn-submit" value="Approve" onClick="approveVacation(' + item.Id + ')">' +
+                    '<input type="submit" class="btn btn-submit" value="Decline" onClick="declineVacation(' + item.Id + ')"></td>' +
+                    '</tr>');
+            });
+        }
         setNames();
     });
 }
@@ -67,23 +71,27 @@ function declineVacation(id) {
 
 function drawConfirmedVacations() {
     $.get('/API/AdminApi/GetConfirmedVacations').done(function(data) {
-        $.each(data, function(key, item) {
-            var start = dateFormat(new Date(item.StartDate));
-            var end = dateFormat(new Date(item.EndDate));
-            var comment = item.Comments;
-            if (comment == null) {
-                comment = "";
-            }
-            $confirmedVacations.append('<tr><td class="name">' + item.EmployeeId + '</td>' +
-                '<td>' + start + '</td>' +
-                '<td>' + end + '</td>' +
-                '<td><p>' + comment + '</p></td>' +
-                '<td><input id="Modify' + item.Id + '" value="Modify" data-placement="bottom" data-toggle="popover" data-title="Modify" data-container="body" type="button" data-html="true" class="btn btn-submit modify" onclick="">' +
-                '<input value="Delete" type="button" class="btn btn-submit" onclick="deleteVacation(' + item.Id + ')"</td>' +
-                '</tr>');
-            popover(item.Id);         
-        });
-        setNames();
+        if (data.Message) {
+            $confirmedVacationStatus.empty().append("Teil puuduvad õigused näha confirmed puhkusi.");
+        } else {
+            $.each(data, function(key, item) {
+                var start = dateFormat(new Date(item.StartDate));
+                var end = dateFormat(new Date(item.EndDate));
+                var comment = item.Comments;
+                if (comment == null) {
+                    comment = "";
+                }
+                $confirmedVacations.append('<tr><td class="name">' + item.EmployeeId + '</td>' +
+                    '<td>' + start + '</td>' +
+                    '<td>' + end + '</td>' +
+                    '<td><p>' + comment + '</p></td>' +
+                    '<td><input id="Modify' + item.Id + '" value="Modify" data-placement="bottom" data-toggle="popover" data-title="Modify" data-container="body" type="button" data-html="true" class="btn btn-submit modify" onclick="">' +
+                    '<input value="Delete" type="button" class="btn btn-submit" onclick="deleteVacation(' + item.Id + ')"</td>' +
+                    '</tr>');
+                popover(item.Id);
+            });
+            setNames();
+        }
     });
 }
 
@@ -119,18 +127,22 @@ function deleteVacation(id) {
 }
 
 function drawRequests() {
-    $.get('/API/AdminApi/GetPendingRequests').done(function (data) {
-        $.each(data, function(key, item) {
-            var timestamp = dateFormat(new Date(item.TimeStamp));
-            $requests.append('<tr><td class="name">' + item.EmployeeId + '</td>' +
-                '<td>' + item.Req + '</td>' +
-                '<td>' + item.Description + '</td>' +
-                '<td>' + timestamp + '</td>' +
-                '<td><input type="submit" class="btn btn-submit" value="Approve" onClick="acceptRequest(' + item.Id + ')">' +
-                '<input type="submit" class="btn btn-submit" value="Decline" onClick="declineRequest(' + item.Id + ')"></td>' +
-                '</tr>');
-        });
-        setNames();
+    $.get('/API/AdminApi/GetPendingRequests').done(function(data) {
+        if (data.Message) {
+            $requestStatus.empty().append("Teil puuduvad õigused näha pending taotlusi.");
+        } else {
+            $.each(data, function(key, item) {
+                var timestamp = dateFormat(new Date(item.TimeStamp));
+                $requests.append('<tr><td class="name">' + item.EmployeeId + '</td>' +
+                    '<td>' + item.Req + '</td>' +
+                    '<td>' + item.Description + '</td>' +
+                    '<td>' + timestamp + '</td>' +
+                    '<td><input type="submit" class="btn btn-submit" value="Approve" onClick="acceptRequest(' + item.Id + ')">' +
+                    '<input type="submit" class="btn btn-submit" value="Decline" onClick="declineRequest(' + item.Id + ')"></td>' +
+                    '</tr>');
+            });
+            setNames();
+        }
     });
 }
 

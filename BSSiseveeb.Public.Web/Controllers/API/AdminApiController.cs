@@ -4,14 +4,19 @@ using System.Linq;
 using System.Web.Http;
 using BSSiseveeb.Core.Contracts.Repositories;
 using BSSiseveeb.Core.Domain;
+using BSSiseveeb.Data;
 using BSSiseveeb.Public.Web.Attributes;
 using BSSiseveeb.Public.Web.Models;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace BSSiseveeb.Public.Web.Controllers.API
 {
     
     public class AdminApiController : BaseApiController
     {
+        public IBSContextContextManager ContextManager { get; set; }
+
         [AuthorizeApi(AccessRights.Level5)]
         [HttpGet]
         public IEnumerable<Vacation> GetPendingVacations()
@@ -19,7 +24,7 @@ namespace BSSiseveeb.Public.Web.Controllers.API
             return VacationRepository.Where(x => x.Status == VacationStatus.Pending).OrderBy(x => x.StartDate).ToList();
         }
 
-        [AuthorizeApi(AccessRights.Level5)]
+        [AuthorizeApi(AccessRights.Level4)]
         [HttpGet]
         public IEnumerable<Request> GetPendingRequests()
         {
@@ -30,32 +35,34 @@ namespace BSSiseveeb.Public.Web.Controllers.API
         [HttpPost]
         public IHttpActionResult ApproveVacation(ApiControllerModels.GeneralIdModel model)
         {
-            var id = model.Id;
-            var vacation = VacationRepository.First(x => x.Id == id);
+            var vacation = VacationRepository.First(x => x.Id == model.Id);
             vacation.Status = VacationStatus.Approved;
             VacationRepository.SaveOrUpdate(vacation);
             VacationRepository.Commit();
             return Ok();
         }
 
-        [AuthorizeApi(AccessRights.Level5)]
+        [AuthorizeApi(AccessRights.Level4)]
         [HttpPost]
         public IHttpActionResult ApproveRequest(ApiControllerModels.GeneralIdModel model)
         {
-            var id = model.Id;
-            var request = RequestRepository.First(x => x.Id == id);
+            var request = RequestRepository.FirstOrDefault(x => x.Id == model.Id);
+            if (request == null)
+            {
+                return BadRequest("ilus error siia");
+            }
+
             request.Status = RequestStatus.Confirmed;
             RequestRepository.SaveOrUpdate(request);
             RequestRepository.Commit();
             return Ok();
         }
 
-        [AuthorizeApi(AccessRights.Level5)]
+        [AuthorizeApi(AccessRights.Level4)]
         [HttpPost]
         public IHttpActionResult DeclineRequest(ApiControllerModels.GeneralIdModel model)
         {
-            var id = model.Id;
-            var request = RequestRepository.First(x => x.Id == id);
+            var request = RequestRepository.First(x => x.Id == model.Id);
             request.Status = RequestStatus.Declined;
             RequestRepository.SaveOrUpdate(request);
             RequestRepository.Commit();
@@ -73,14 +80,13 @@ namespace BSSiseveeb.Public.Web.Controllers.API
         [HttpPost]
         public IHttpActionResult ModifyVacation(ApiControllerModels.VacationModel model)
         {
-            var id = model.Id;
             if (model.End < model.Start)
             {
                 return BadRequest();
             }
 
-            var vacation = VacationRepository.First(x => x.Id == id);
-            var currentUser = CurrentUser().EmployeeId;
+            var vacation = VacationRepository.First(x => x.Id == model.Id);
+            var currentUser = CurrentUser.EmployeeId;
             var employee = EmployeeRepository.First(x => x.Id == currentUser);
             var tempDays = vacation.Days;
 
@@ -109,9 +115,8 @@ namespace BSSiseveeb.Public.Web.Controllers.API
         [HttpPost]
         public IHttpActionResult DeleteVacation(ApiControllerModels.GeneralIdModel model)
         {
-            var id = model.Id;
-            var vacation = VacationRepository.First(x => x.Id == id);
-            var currentUser = CurrentUser().EmployeeId;
+            var vacation = VacationRepository.First(x => x.Id == model.Id);
+            var currentUser = CurrentUser.EmployeeId;
             var employee = EmployeeRepository.First(x => x.Id == currentUser);
 
             employee.VacationDays += vacation.Days;
@@ -120,9 +125,7 @@ namespace BSSiseveeb.Public.Web.Controllers.API
             EmployeeRepository.SaveOrUpdate(employee);
             VacationRepository.SaveOrUpdate(vacation);
 
-            EmployeeRepository.Commit();
-            VacationRepository.Commit();
-
+            ContextManager.Commit();
             return Ok();
         }
     }
