@@ -7,6 +7,7 @@ var $mainRow = $("#mainRow");
 var $calendarBody = $("#calendarBody");
 var $comment = $("#comment");
 var $myVacations = $("#myVacationsBody");
+var $remainingDays = $("#remainingDays");
 var employees;
 
 $(document).ready(function () {
@@ -139,6 +140,8 @@ function sendVacationDate() {
 
 function drawMyVacations() {
     $myVacations.empty();
+    getVacationDays();
+
     $.get('/API/Calendar/GetMyVacation')
         .done(function(data) {
             $.each(data, function(key, item) {
@@ -160,5 +163,12 @@ function cancelVacation(id) {
     $.post('/API/Calendar/CancelVacation', { Id: id })
         .success(function() {
             drawMyVacations();
+        });
+}
+
+function getVacationDays() {
+    $.get('/API/Calendar/GetVacationDays')
+        .done(function(data) {
+            $remainingDays.empty().append("Alles jäänud puhkepäevad: " + data);
         });
 }

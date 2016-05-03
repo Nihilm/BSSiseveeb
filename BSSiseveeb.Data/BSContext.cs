@@ -23,6 +23,15 @@ namespace BSSiseveeb.Data
         {
             Database.SetInitializer(new DbInitializer());
         }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<ApplicationUser>()
+                .HasOptional(x => x.Employee)
+                .WithRequired(x => x.Account);
+        }
     }
 
     

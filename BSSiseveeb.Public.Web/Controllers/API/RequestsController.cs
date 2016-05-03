@@ -10,7 +10,8 @@ namespace BSSiseveeb.Public.Web.Controllers.API
     public class RequestsController : BaseApiController
     {
         [HttpPost]
-        public IHttpActionResult SetRequest(ApiControllerModels.RequestModel model)
+        [AuthorizeApi(AccessRights.Level1)]
+        public IHttpActionResult SetRequest(RequestModel model)
         {
             var title = model.Title;
             var info = model.Info;

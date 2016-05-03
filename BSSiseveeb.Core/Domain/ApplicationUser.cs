@@ -12,6 +12,8 @@ namespace BSSiseveeb.Core.Domain
         public string RoleId { get; set; }
         public string Messages { get; set; }
 
+        public virtual Employee Employee { get; set; }
+
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType

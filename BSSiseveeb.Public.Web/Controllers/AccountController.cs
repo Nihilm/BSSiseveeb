@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using BSSiseveeb.Core.Domain;
+using BSSiseveeb.Core.Mappers;
+using BSSiseveeb.Public.Web.Attributes;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
@@ -73,7 +75,61 @@ namespace BSSiseveeb.Public.Web.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-  
+
+        [AuthorizeLevel(AccessRights.Level1)]
+        public ActionResult Index()
+        {
+            var employee = EmployeeRepository.AsDto().Single(x => x.Id == CurrentUser.EmployeeId);
+            var model = new ChangeAccountSettingsViewModel()
+            {
+                Phone = employee.PhoneNumber,
+                Email = employee.Email
+            };
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult UpdateAccount(ChangeAccountSettingsViewModel model)
+        {
+
+            var employeeId = CurrentUser.EmployeeId;
+            var employee = EmployeeRepository.First(x => x.Id == employeeId);
+            employee.Email = model.Email;
+            employee.PhoneNumber = model.Phone;
+
+            EmployeeRepository.SaveOrUpdate(employee);
+            EmployeeRepository.Commit();
+
+            CurrentUser.Email = model.Email;
+            UserManager.Update(CurrentUser);
+
+            if (model.NewPassword != null)
+            {
+                var userId = CurrentUser.Id;
+                var result = UserManager.ChangePassword(userId, model.OldPassword, model.NewPassword);
+                model.OldPassword = "";
+                model.NewPassword = "";
+                model.ConfirmPassword = "";
+
+                if (result.Succeeded)
+                {
+                    model.Message = "Parooli vahetus õnnestus";
+                    return View("Index", model);
+                }
+
+                model.Message = "Parooli vahetus ebaõnnestus";
+                return View("Index", model);
+            }
+
+            model.OldPassword = "";
+            model.NewPassword = "";
+            model.ConfirmPassword = "";
+            model.Message = "Teie andmed on salvestatud";
+            return View("Index", model);
+        }
+
+
 
         protected override void Dispose(bool disposing)
         {
@@ -95,9 +151,6 @@ namespace BSSiseveeb.Public.Web.Controllers
             base.Dispose(disposing);
         }
 
-        #region Helpers
-        // Used for XSRF protection when adding external logins
-        private const string XsrfKey = "XsrfId";
 
         private IAuthenticationManager AuthenticationManager
         {
@@ -107,13 +160,6 @@ namespace BSSiseveeb.Public.Web.Controllers
             }
         }
 
-        private void AddErrors(IdentityResult result)
-        {
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError("", error);
-            }
-        }
 
         private ActionResult RedirectToLocal(string returnUrl)
         {
@@ -142,16 +188,6 @@ namespace BSSiseveeb.Public.Web.Controllers
             public string RedirectUri { get; set; }
             public string UserId { get; set; }
 
-            public override void ExecuteResult(ControllerContext context)
-            {
-                var properties = new AuthenticationProperties { RedirectUri = RedirectUri };
-                if (UserId != null)
-                {
-                    properties.Dictionary[XsrfKey] = UserId;
-                }
-                context.HttpContext.GetOwinContext().Authentication.Challenge(properties, LoginProvider);
-            }
         }
-        #endregion
     }
 }

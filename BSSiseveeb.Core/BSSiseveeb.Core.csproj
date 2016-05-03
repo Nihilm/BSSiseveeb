@@ -81,7 +81,13 @@
     <Compile Include="Domain\Role.cs" />
     <Compile Include="Domain\Request.cs" />
     <Compile Include="Domain\Vacation.cs" />
+    <Compile Include="Dto\EmployeeDto.cs" />
+    <Compile Include="Dto\RequestDto.cs" />
+    <Compile Include="Dto\VacationDto.cs" />
     <Compile Include="IoC.cs" />
+    <Compile Include="Mappers\EmployeeMapper.cs" />
+    <Compile Include="Mappers\RequestMapper.cs" />
+    <Compile Include="Mappers\VacationMapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using BSSiseveeb.Core.Domain;
+using BSSiseveeb.Core.Dto;
+using BSSiseveeb.Core.Mappers;
 using BSSiseveeb.Public.Web.Attributes;
 using BSSiseveeb.Public.Web.Models;
+using VacationStatus = BSSiseveeb.Core.Domain.VacationStatus;
 
 namespace BSSiseveeb.Public.Web.Controllers.API
 {
@@ -12,18 +15,17 @@ namespace BSSiseveeb.Public.Web.Controllers.API
     public class CalendarController : BaseApiController
     {
         [HttpGet]
-        public IEnumerable<Vacation> GetVacations (DateTime date)
+        public IEnumerable<VacationDto> GetVacations (DateTime date)
         {
             var startRange = new DateTime(date.Year, date.Month, 1);
             var endRange = new DateTime(date.Year, date.Month, DateTime.DaysInMonth(date.Year, date.Month), 23, 59, 59);
-            return VacationRepository.Where(x => x.StartDate <= endRange 
+            return VacationRepository.AsDto().Where(x => x.StartDate <= endRange 
                     && startRange <= x.EndDate
-                    && x.Status == VacationStatus.Approved)
-                    .ToList();
+                    && x.Status == VacationStatus.Approved);
         }
 
         [HttpPost]
-        public IHttpActionResult SetVacation(ApiControllerModels.VacationModel model)
+        public IHttpActionResult SetVacation(VacationModel model)
         {
             var currentUser = CurrentUser.EmployeeId;
 
@@ -63,15 +65,15 @@ namespace BSSiseveeb.Public.Web.Controllers.API
         }
 
         [HttpGet]
-        public List<Vacation> GetMyVacation()
+        public IEnumerable<VacationDto> GetMyVacation()
         {
-            var result = VacationRepository.Where(x => x.EmployeeId == CurrentUser.EmployeeId)
-                .Where(x => x.Status == VacationStatus.Approved || x.Status == VacationStatus.Pending).ToList();
-            return result;
+            return VacationRepository.AsDto()
+                .Where(x => x.EmployeeId == CurrentUser.EmployeeId)
+                .Where(x => x.Status == VacationStatus.Approved || x.Status == VacationStatus.Pending);
         }
 
         [HttpPost]
-        public IHttpActionResult CancelVacation(ApiControllerModels.GeneralIdModel model)
+        public IHttpActionResult CancelVacation(GeneralIdModel model)
         {
             var vacation = VacationRepository.First(x => x.Id == model.Id);
             var currentUser = CurrentUser.EmployeeId;
@@ -86,6 +88,13 @@ namespace BSSiseveeb.Public.Web.Controllers.API
             EmployeeRepository.Commit();
             VacationRepository.Commit();
             return Ok();
-        } 
+        }
+
+        [HttpGet]
+        public int GetVacationDays()
+        {
+            var currentUser = CurrentUser.EmployeeId;
+            return EmployeeRepository.AsDto().First(x => x.Id == currentUser).VacationDays;
+        }
     }
 }

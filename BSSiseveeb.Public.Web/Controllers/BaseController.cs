@@ -56,6 +56,17 @@ namespace BSSiseveeb.Public.Web.Controllers
             }
         }
 
+        public string CurrentUserId => User.Identity.GetUserId();
+
+        public ApplicationUser CurrentUser
+        {
+            get
+            {
+                return HttpContext.GetOwinContext()
+                    .GetUserManager<ApplicationUserManager>()
+                    .FindById(CurrentUserId);
+            }
+        }
 
 
         protected override void Dispose(bool disposing)
@@ -67,13 +78,6 @@ namespace BSSiseveeb.Public.Web.Controllers
             }
 
             base.Dispose(disposing);
-        }
-
-        public ApplicationUser CurrentUser()
-        {
-            return HttpContext.GetOwinContext()
-                    .GetUserManager<ApplicationUserManager>()
-                    .FindById(User.Identity.GetUserId());
         }
     }
 }

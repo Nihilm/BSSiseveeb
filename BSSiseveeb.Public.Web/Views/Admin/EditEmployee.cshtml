@@ -1,0 +1,87 @@
+﻿@using BSSiseveeb.Public.Web.Models
+@model RegistrationModel
+
+@{
+    ViewBag.Title = "EditEmployee";
+}
+@using (Html.BeginForm("EditEmployee", "Admin"))
+{
+    @Html.AntiForgeryToken()
+    <div class="form-horizontal">
+        <h3>Töötaja nr: @Model.Id</h3>
+        <h5 id="employeeStatus"></h5>
+        <hr/>
+        @{
+            Model.Id = Model.Id;
+            Model.OldRole = Model.OldRole;
+        }
+        <div class="form-group">
+            @Html.LabelFor(model => model.Username, htmlAttributes: new { @class = "control-label col-md-2"})
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Username, new { htmlAttributes = new { @class = "form-control", @value = Model.Username } })
+                @Html.ValidationMessageFor(model => model.Username, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", @value = Model.Name } })
+                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", @value = Model.Email } })
+                @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Start, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="input-append date form-group col-md-10" id="dp1" data-date="" data-date-format="yyyy-mm-dd">
+                @Html.EditorFor(model => model.Start, new { htmlAttributes = new { @class = "form-control", @onClick = "showDatePicker('#dp1')" }, @value = Model.Start })
+                <span class="add-on"><i class="icon-th"></i></span>
+                @Html.ValidationMessageFor(model => model.Start, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.End, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="input-append date form-group col-md-10" id="dp2" data-date="" data-date-format="yyyy-mm-dd">
+                @Html.EditorFor(model => model.End, new { htmlAttributes = new { @class = "form-control", @onClick = "showDatePicker('#dp2')" }, @value = Model.End })
+                <span class="add-on"><i class="icon-th"></i></span>
+                @Html.ValidationMessageFor(model => model.End, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Phone, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Phone, new { htmlAttributes = new { @class = "form-control" }, @value = Model.Phone })
+                @Html.ValidationMessageFor(model => model.Phone, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.VacationDays, htmlAttributes: new {@class = "control-label col-md-2"})
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.VacationDays, new {htmlAttributes = new {@class = "form-control"}, @value = Model.VacationDays})
+                @Html.ValidationMessageFor(model => model.VacationDays, "", new {@class = "text-danger"})
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.NewRole, htmlAttributes: new {@class = "control-label col-md-2"})
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.NewRole, new SelectList(Model.Roles), new {@class = "form-control", @value = Model.NewRole})
+                @Html.ValidationMessageFor(model => model.NewRole, "", new {@class = "text-danger"})
+            </div>
+        </div>
+        @Html.HiddenFor(model => model.OldRole)
+        @Html.HiddenFor(model => model.Id)
+        <input type="submit" class="btn btn-submit" value="Muuda">
+    </div>
+}
+
+@section scripts {
+    @Scripts.Render("~/Scripts/general.js")
+    @Scripts.Render("~/Scripts/bootstrap-datepicker.js")
+    @Scripts.Render("~/Scripts/addemployee.js")
+    @Scripts.Render("~/bundles/jqueryval")
+}

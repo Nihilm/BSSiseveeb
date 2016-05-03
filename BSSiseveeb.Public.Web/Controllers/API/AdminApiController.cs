@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
-using BSSiseveeb.Core.Contracts.Repositories;
 using BSSiseveeb.Core.Domain;
+using BSSiseveeb.Core.Dto;
+using BSSiseveeb.Core.Mappers;
 using BSSiseveeb.Data;
 using BSSiseveeb.Public.Web.Attributes;
 using BSSiseveeb.Public.Web.Models;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
+using RequestStatus = BSSiseveeb.Core.Domain.RequestStatus;
+using VacationStatus = BSSiseveeb.Core.Domain.VacationStatus;
+
 
 namespace BSSiseveeb.Public.Web.Controllers.API
 {
@@ -19,21 +21,21 @@ namespace BSSiseveeb.Public.Web.Controllers.API
 
         [AuthorizeApi(AccessRights.Level5)]
         [HttpGet]
-        public IEnumerable<Vacation> GetPendingVacations()
+        public IEnumerable<VacationDto> GetPendingVacations()
         {
-            return VacationRepository.Where(x => x.Status == VacationStatus.Pending).OrderBy(x => x.StartDate).ToList();
+            return VacationRepository.AsDto().Where(x => x.Status == VacationStatus.Pending).OrderBy(x => x.StartDate);
         }
 
         [AuthorizeApi(AccessRights.Level4)]
         [HttpGet]
-        public IEnumerable<Request> GetPendingRequests()
+        public IEnumerable<RequestDto> GetPendingRequests()
         {
-            return RequestRepository.Where(x => x.Status == RequestStatus.Pending).OrderBy(x => x.TimeStamp).ToList();
+            return RequestRepository.AsDto().Where(x => x.Status == RequestStatus.Pending).OrderBy(x => x.TimeStamp);
         }
 
         [AuthorizeApi(AccessRights.Level5)]
         [HttpPost]
-        public IHttpActionResult ApproveVacation(ApiControllerModels.GeneralIdModel model)
+        public IHttpActionResult ApproveVacation(GeneralIdModel model)
         {
             var vacation = VacationRepository.First(x => x.Id == model.Id);
             vacation.Status = VacationStatus.Approved;
@@ -44,7 +46,7 @@ namespace BSSiseveeb.Public.Web.Controllers.API
 
         [AuthorizeApi(AccessRights.Level4)]
         [HttpPost]
-        public IHttpActionResult ApproveRequest(ApiControllerModels.GeneralIdModel model)
+        public IHttpActionResult ApproveRequest(GeneralIdModel model)
         {
             var request = RequestRepository.FirstOrDefault(x => x.Id == model.Id);
             if (request == null)
@@ -60,7 +62,7 @@ namespace BSSiseveeb.Public.Web.Controllers.API
 
         [AuthorizeApi(AccessRights.Level4)]
         [HttpPost]
-        public IHttpActionResult DeclineRequest(ApiControllerModels.GeneralIdModel model)
+        public IHttpActionResult DeclineRequest(GeneralIdModel model)
         {
             var request = RequestRepository.First(x => x.Id == model.Id);
             request.Status = RequestStatus.Declined;
@@ -71,14 +73,14 @@ namespace BSSiseveeb.Public.Web.Controllers.API
 
         [AuthorizeApi(AccessRights.Level5)]
         [HttpGet]
-        public IEnumerable<Vacation> GetConfirmedVacations()
+        public IEnumerable<VacationDto> GetConfirmedVacations()
         {
-            return VacationRepository.Where(x => x.Status == VacationStatus.Approved && x.EndDate > DateTime.Now).ToList();
+            return VacationRepository.AsDto().Where(x => x.Status == VacationStatus.Approved && x.EndDate > DateTime.Now);
         }
 
         [AuthorizeApi(AccessRights.Level5)]
         [HttpPost]
-        public IHttpActionResult ModifyVacation(ApiControllerModels.VacationModel model)
+        public IHttpActionResult ModifyVacation(VacationModel model)
         {
             if (model.End < model.Start)
             {
@@ -113,7 +115,7 @@ namespace BSSiseveeb.Public.Web.Controllers.API
 
         [AuthorizeApi(AccessRights.Level5)]
         [HttpPost]
-        public IHttpActionResult DeleteVacation(ApiControllerModels.GeneralIdModel model)
+        public IHttpActionResult DeleteVacation(GeneralIdModel model)
         {
             var vacation = VacationRepository.First(x => x.Id == model.Id);
             var currentUser = CurrentUser.EmployeeId;

@@ -1,10 +1,11 @@
 ﻿using System;
-using Sparkling.DataInterfaces.Domain;
 
-namespace BSSiseveeb.Core.Domain
+
+namespace BSSiseveeb.Core.Dto
 {
-    public class Employee : Entity
+    public class EmployeeDto
     {
+        public int Id { get; set; }
         public string Name { get; set; }
         public DateTime Birthdate { get; set; }
         public DateTime ContractStart { get; set; }
@@ -12,7 +13,5 @@ namespace BSSiseveeb.Core.Domain
         public string PhoneNumber { get; set; }
         public int VacationDays { get; set; }
         public string Email { get; set; }
-
-        public virtual ApplicationUser Account { get; set; }
     }
 }

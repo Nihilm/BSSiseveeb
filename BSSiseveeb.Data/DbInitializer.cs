@@ -16,7 +16,7 @@ namespace BSSiseveeb.Data
             _ctx = context;
             _hasher = new PasswordHasher();
 
-            _ctx.Employees.Add(new Employee
+            var emp1 = new Employee
             {
                 Name = "Toomas Käär",
                 Birthdate = new DateTime(1993, 9, 1),
@@ -25,9 +25,9 @@ namespace BSSiseveeb.Data
                 PhoneNumber = "+37253489161",
                 VacationDays = 28,
                 Email = "test@test.ee"
-            });
+            };
 
-            _ctx.Employees.Add(new Employee()
+            var emp2 = new Employee()
             {
                 Name = "Testija kaks",
                 Birthdate = new DateTime(1993, 4, 25),
@@ -36,9 +36,9 @@ namespace BSSiseveeb.Data
                 PhoneNumber = "+37253489161",
                 VacationDays = 28,
                 Email = "tester@test.ee"
-            });
+            };
 
-            _ctx.Employees.Add(new Employee()
+            var emp3 = new Employee()
             {
                 Name = "Testija kolm",
                 Birthdate = new DateTime(1993, 4, 25),
@@ -47,7 +47,7 @@ namespace BSSiseveeb.Data
                 PhoneNumber = "+37253489161",
                 VacationDays = 28,
                 Email = "tester3@test.ee"
-            });
+            };
 
             var adminRole = new Role
             {
@@ -77,7 +77,8 @@ namespace BSSiseveeb.Data
                 EmailConfirmed = true,
                 LockoutEnabled = false,
                 UserName = "test@test.ee",
-                SecurityStamp = Guid.NewGuid().ToString()
+                SecurityStamp = Guid.NewGuid().ToString(),
+                Employee = emp1
             };
 
             var user2 = new ApplicationUser()
@@ -90,7 +91,8 @@ namespace BSSiseveeb.Data
                 EmailConfirmed = true,
                 LockoutEnabled = false,
                 UserName = "tester@test.ee",
-                SecurityStamp = Guid.NewGuid().ToString()
+                SecurityStamp = Guid.NewGuid().ToString(),
+                Employee = emp2
             };
 
             var user3 = new ApplicationUser()
@@ -103,8 +105,8 @@ namespace BSSiseveeb.Data
                 EmailConfirmed = true,
                 LockoutEnabled = false,
                 UserName = "tester3@test.ee",
-                SecurityStamp = Guid.NewGuid().ToString()
-
+                SecurityStamp = Guid.NewGuid().ToString(),
+                Employee  = emp3
             };
 
             adminRole.Users.Add(new IdentityUserRole() {RoleId = adminRole.Id, UserId = user.Id});
