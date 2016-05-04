@@ -6,12 +6,13 @@ using BSSiseveeb.Core.Domain;
 using BSSiseveeb.Core.Dto;
 using BSSiseveeb.Core.Mappers;
 using BSSiseveeb.Public.Web.Attributes;
+using BSSiseveeb.Public.Web.Controllers.API.Helpers;
 using BSSiseveeb.Public.Web.Models;
-using VacationStatus = BSSiseveeb.Core.Domain.VacationStatus;
+
 
 namespace BSSiseveeb.Public.Web.Controllers.API
 {
-    [AuthorizeLevel(AccessRights.Level1)]
+    [AuthorizeLevel(AccessRights.Standard)]
     public class CalendarController : BaseApiController
     {
         [HttpGet]
@@ -28,40 +29,71 @@ namespace BSSiseveeb.Public.Web.Controllers.API
         public IHttpActionResult SetVacation(VacationModel model)
         {
             var currentUser = CurrentUser.EmployeeId;
+            var currentUserVacations = VacationRepository.Where(x => x.EmployeeId == currentUser && x.Status != VacationStatus.Declined).ToList();
 
             int days = (int)model.End.Subtract(model.Start).TotalDays + 1;
 
             if (model.Start > model.End)
             {
-                return BadRequest();
+                return BadRequest("ERROR: Puhkuse lõpp on enne puhkuse algust");
             }
 
             var employee = EmployeeRepository.First(x => x.Id == currentUser);
 
             if (employee.VacationDays - days < 0)
             {
-                return BadRequest();
+                return BadRequest("ERROR: Pole piisavalt kasutamata puhkusepäevi");
             }
 
-            employee.VacationDays -= days;
-            EmployeeRepository.SaveOrUpdate(employee);
-            EmployeeRepository.Commit();
-
-
-            //TODO: Lisainfo väljale piirangud
-
-            VacationRepository.AddIfNew(new Vacation()
+            
+            if (model.Comment?.Length > 250)
             {
-                StartDate = model.Start,
-                EndDate = model.End,
-                Status = VacationStatus.Pending,
-                EmployeeId = currentUser,
-                Days = days,
-                Comments = model.Comment
-            });
-            VacationRepository.Commit();
+                return BadRequest("ERROR: Lisainfo väljal ei tohi olla rohkem kui 250 tähemärki");
+            }
+     
 
-            return Ok();
+            if (days == 14 || days <= 7)
+            {
+                var checkForFourteen = currentUserVacations.Where(x => x.Days == 14 && x.StartDate.Year == DateTime.Now.Year).ToList();
+                var checkForSeven = currentUserVacations.Where(x => x.Days == 7 && x.StartDate.Year == DateTime.Now.Year).ToList();
+
+                if (checkForFourteen.Any() && days == 14)
+                {
+                    return BadRequest("ERROR: Teil on juba sel aastal olnud/paigas puhkus pikkusega 14 päeva");
+                }
+
+                if (checkForSeven.Any() && days == 7)
+                {
+                    return BadRequest("ERROR: Teil on juba sel aastal olnud/paigas puhkus pikkusega 7 päeva");
+                }
+
+                employee.VacationDays -= days;
+                EmployeeRepository.SaveOrUpdate(employee);
+                EmployeeRepository.Commit();
+
+                VacationRepository.AddIfNew(new Vacation()
+                {
+                    StartDate = model.Start,
+                    EndDate = model.End,
+                    Status = VacationStatus.Pending,
+                    EmployeeId = currentUser,
+                    Days = days,
+                    Comments = model.Comment
+                });
+                VacationRepository.Commit();
+
+                var roles = RoleManager.Roles.Where(x => x.Rights.HasFlag(AccessRights.Vacations)).Select(x => x.Id);
+                var emails =
+                    EmployeeRepository.Where(x => x.Account.Messages == "Yes" && roles.Contains(x.Account.RoleId))
+                        .Select(x => x.Email)
+                        .ToList();
+                var subject = "Approved Request";
+                var body = "<p>Your Request has been approved</p>";
+                EmailHelper.SendEmail(emails, subject, body);
+
+                return Ok();
+            }
+            return BadRequest("ERROR: Valitud puhkuse pikkus ei vasta eeskirjadele, lubatud on üks 14 päevane puhkus, üks 7 päevane puhkus ja ülejäänud puhkused on lühemad kui 7 päeva");
         }
 
         [HttpGet]

@@ -30,9 +30,32 @@
                         <li>@Html.ActionLink("Töötajad", "Workers", "Home")</li>
                         <li>@Html.ActionLink("Töömaterjalid", "Requests", "Home")</li>
 
-                        if (User.IsInRole("Administrator") || User.IsInRole("RequestHandler"))
+                        if (User.IsInRole("Administrator") || 
+                            User.IsInRole("RequestHandler") || 
+                            User.IsInRole("VacationHandler") || 
+                            User.IsInRole("UserHandler"))
                         {
-                            <li> @Html.ActionLink("Admin", "Index", "Admin")</li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin <span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    @if (User.IsInRole("Administrator") || User.IsInRole("VacationHandler"))
+                                    {
+                                        <li>@Html.ActionLink("Vacations", "Vacations", "Admin")</li>
+                                    }
+                                    @if (User.IsInRole("Administrator") || User.IsInRole("RequestHandler"))
+                                    {
+                                        <li>@Html.ActionLink("Requests", "Requests", "Admin")</li>
+                                    }
+                                    @if (User.IsInRole("Administrator") || User.IsInRole("UserHandler"))
+                                    {
+                                        <li>@Html.ActionLink("Add Employee", "AddEmployee", "Admin")</li>
+                                    }
+                                    @if (User.IsInRole("Administrator") || User.IsInRole("UserHandler"))
+                                    {
+                                        <li>@Html.ActionLink("Edit Employees", "EditEmployees", "Admin")</li>
+                                    }
+                                </ul>
+                            </li>
                         }
                     }
                 </ul>
@@ -44,7 +67,7 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; 2016 - Placeholder </p>
+            <p>&copy; Brightspark 2016</p>
         </footer>
     </div>
 

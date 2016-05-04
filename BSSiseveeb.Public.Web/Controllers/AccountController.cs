@@ -1,12 +1,8 @@
-﻿using System;
-using System.Globalization;
-using System.Linq;
-using System.Security.Claims;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using BSSiseveeb.Core.Domain;
-using BSSiseveeb.Core.Mappers;
 using BSSiseveeb.Public.Web.Attributes;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
@@ -76,14 +72,15 @@ namespace BSSiseveeb.Public.Web.Controllers
         }
 
 
-        [AuthorizeLevel(AccessRights.Level1)]
+        [AuthorizeLevel(AccessRights.Standard)]
         public ActionResult Index()
         {
-            var employee = EmployeeRepository.AsDto().Single(x => x.Id == CurrentUser.EmployeeId);
+            var employee = EmployeeRepository.Single(x => x.Id == CurrentUser.EmployeeId);
             var model = new ChangeAccountSettingsViewModel()
             {
                 Phone = employee.PhoneNumber,
-                Email = employee.Email
+                Email = employee.Email,
+                Messages = employee.Account.Messages
             };
             return View(model);
         }
@@ -102,6 +99,7 @@ namespace BSSiseveeb.Public.Web.Controllers
             EmployeeRepository.Commit();
 
             CurrentUser.Email = model.Email;
+            CurrentUser.Messages = model.Messages;
             UserManager.Update(CurrentUser);
 
             if (model.NewPassword != null)
@@ -168,26 +166,6 @@ namespace BSSiseveeb.Public.Web.Controllers
                 return Redirect(returnUrl);
             }
             return RedirectToAction("Index", "Home");
-        }
-
-        internal class ChallengeResult : HttpUnauthorizedResult
-        {
-            public ChallengeResult(string provider, string redirectUri)
-                : this(provider, redirectUri, null)
-            {
-            }
-
-            public ChallengeResult(string provider, string redirectUri, string userId)
-            {
-                LoginProvider = provider;
-                RedirectUri = redirectUri;
-                UserId = userId;
-            }
-
-            public string LoginProvider { get; set; }
-            public string RedirectUri { get; set; }
-            public string UserId { get; set; }
-
         }
     }
 }

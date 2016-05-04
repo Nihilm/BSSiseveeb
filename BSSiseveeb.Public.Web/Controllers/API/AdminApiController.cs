@@ -7,9 +7,8 @@ using BSSiseveeb.Core.Dto;
 using BSSiseveeb.Core.Mappers;
 using BSSiseveeb.Data;
 using BSSiseveeb.Public.Web.Attributes;
+using BSSiseveeb.Public.Web.Controllers.API.Helpers;
 using BSSiseveeb.Public.Web.Models;
-using RequestStatus = BSSiseveeb.Core.Domain.RequestStatus;
-using VacationStatus = BSSiseveeb.Core.Domain.VacationStatus;
 
 
 namespace BSSiseveeb.Public.Web.Controllers.API
@@ -19,48 +18,65 @@ namespace BSSiseveeb.Public.Web.Controllers.API
     {
         public IBSContextContextManager ContextManager { get; set; }
 
-        [AuthorizeApi(AccessRights.Level5)]
+        [AuthorizeApi(AccessRights.Vacations)]
         [HttpGet]
         public IEnumerable<VacationDto> GetPendingVacations()
         {
             return VacationRepository.AsDto().Where(x => x.Status == VacationStatus.Pending).OrderBy(x => x.StartDate);
         }
 
-        [AuthorizeApi(AccessRights.Level4)]
+        [AuthorizeApi(AccessRights.Requests)]
         [HttpGet]
         public IEnumerable<RequestDto> GetPendingRequests()
         {
             return RequestRepository.AsDto().Where(x => x.Status == RequestStatus.Pending).OrderBy(x => x.TimeStamp);
         }
 
-        [AuthorizeApi(AccessRights.Level5)]
+        [AuthorizeApi(AccessRights.Vacations)]
         [HttpPost]
         public IHttpActionResult ApproveVacation(GeneralIdModel model)
         {
-            var vacation = VacationRepository.First(x => x.Id == model.Id);
+            var vacation = VacationRepository.FirstOrDefault(x => x.Id == model.Id);
+            if (vacation == null)
+            {
+                return BadRequest("ERROR: Puhkus puudub andmebaasis");
+            }
+
             vacation.Status = VacationStatus.Approved;
             VacationRepository.SaveOrUpdate(vacation);
             VacationRepository.Commit();
+
+            var emails = EmployeeRepository.Where(x => x.Account.Messages == "Yes" && x.Id == vacation.EmployeeId).Select(x => x.Email).ToList();
+            var subject = "Approved Vacation";
+            var body = "<p>Your Vacation has been Approved</p>";
+            EmailHelper.SendEmail(emails, subject, body);
+
             return Ok();
         }
 
-        [AuthorizeApi(AccessRights.Level4)]
+        [AuthorizeApi(AccessRights.Requests)]
         [HttpPost]
         public IHttpActionResult ApproveRequest(GeneralIdModel model)
         {
             var request = RequestRepository.FirstOrDefault(x => x.Id == model.Id);
             if (request == null)
             {
-                return BadRequest("ilus error siia");
+                return BadRequest("ERROR: Request puudub andmebaasis");
             }
 
             request.Status = RequestStatus.Confirmed;
             RequestRepository.SaveOrUpdate(request);
             RequestRepository.Commit();
+
+            var emails = EmployeeRepository.Where(x => x.Account.Messages == "Yes" && x.Id == request.EmployeeId).Select(x => x.Email).ToList();
+            var subject = "Approved Request";
+            var body = "<p>Your Request has been approved</p>";
+            EmailHelper.SendEmail(emails, subject, body);
+
             return Ok();
         }
 
-        [AuthorizeApi(AccessRights.Level4)]
+        [AuthorizeApi(AccessRights.Requests)]
         [HttpPost]
         public IHttpActionResult DeclineRequest(GeneralIdModel model)
         {
@@ -68,17 +84,23 @@ namespace BSSiseveeb.Public.Web.Controllers.API
             request.Status = RequestStatus.Declined;
             RequestRepository.SaveOrUpdate(request);
             RequestRepository.Commit();
+
+            var emails = EmployeeRepository.Where(x => x.Account.Messages == "Yes" && x.Id == request.EmployeeId).Select(x => x.Email).ToList();
+            var subject = "Denied Request";
+            var body = "<p>Your Request has been denied</p>";
+            EmailHelper.SendEmail(emails, subject, body);
+
             return Ok();
         }
 
-        [AuthorizeApi(AccessRights.Level5)]
+        [AuthorizeApi(AccessRights.Vacations)]
         [HttpGet]
         public IEnumerable<VacationDto> GetConfirmedVacations()
         {
             return VacationRepository.AsDto().Where(x => x.Status == VacationStatus.Approved && x.EndDate > DateTime.Now);
         }
 
-        [AuthorizeApi(AccessRights.Level5)]
+        [AuthorizeApi(AccessRights.Vacations)]
         [HttpPost]
         public IHttpActionResult ModifyVacation(VacationModel model)
         {
@@ -110,10 +132,15 @@ namespace BSSiseveeb.Public.Web.Controllers.API
             VacationRepository.SaveOrUpdate(vacation);
             VacationRepository.Commit();
 
+            var emails = EmployeeRepository.Where(x => x.Account.Messages == "Yes" && x.Id == vacation.EmployeeId).Select(x => x.Email).ToList();
+            var subject = "Vacation modified";
+            var body = "<p>Your vacation has been modified</p>";
+            EmailHelper.SendEmail(emails, subject, body);
+
             return Ok();
         }
 
-        [AuthorizeApi(AccessRights.Level5)]
+        [AuthorizeApi(AccessRights.Vacations)]
         [HttpPost]
         public IHttpActionResult DeleteVacation(GeneralIdModel model)
         {
@@ -126,6 +153,11 @@ namespace BSSiseveeb.Public.Web.Controllers.API
 
             EmployeeRepository.SaveOrUpdate(employee);
             VacationRepository.SaveOrUpdate(vacation);
+
+            var emails = EmployeeRepository.Where(x => x.Account.Messages == "Yes" && x.Id == vacation.EmployeeId).Select(x => x.Email).ToList();
+            var subject = "Vacation denied";
+            var body = "<p>Your vacation has been denied</p>";
+            EmailHelper.SendEmail(emails, subject, body);
 
             ContextManager.Commit();
             return Ok();

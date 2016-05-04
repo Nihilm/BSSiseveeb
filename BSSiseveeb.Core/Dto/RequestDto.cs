@@ -12,12 +12,5 @@ namespace BSSiseveeb.Core.Dto
         public int EmployeeId { get; set; }
         public DateTime TimeStamp { get; set; }
     }
-
-    public enum RequestStatus
-    {
-        Confirmed,
-        Declined,
-        Pending
-    }
 }
 

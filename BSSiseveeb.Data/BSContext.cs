@@ -33,6 +33,4 @@ namespace BSSiseveeb.Data
                 .WithRequired(x => x.Account);
         }
     }
-
-    
 }

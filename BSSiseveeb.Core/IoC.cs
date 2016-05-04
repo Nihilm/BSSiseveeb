@@ -9,7 +9,7 @@ namespace BSSiseveeb.Core
 
         public static T Resolve<T>()
         {
-            return (T)_resolver(typeof(T));
+            return (T) _resolver(typeof (T));
         }
 
         public static void Setup(Func<Type, object> resolver)
@@ -24,7 +24,7 @@ namespace BSSiseveeb.Core
 
         public static T GetContainer<T>()
         {
-            return (T)_container;
+            return (T) _container;
         }
     }
 }

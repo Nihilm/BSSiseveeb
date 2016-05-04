@@ -133,8 +133,8 @@ function sendVacationDate() {
             $("#dp2").removeData();
             drawMyVacations();
         })
-        .error(function () {
-            $("#status").empty().append("Midagi Läks valesti");
+        .error(function (data) {
+            $("#status").empty().append(data.responseJSON.Message);
         });
 }
 

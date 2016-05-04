@@ -13,11 +13,4 @@ namespace BSSiseveeb.Core.Dto
         public Domain.VacationStatus Status { get; set; }
         public string Comments { get; set; }
     }
-    public enum VacationStatus
-    {
-        Approved,
-        Declined,
-        Pending,
-        Retired
-    }
 }

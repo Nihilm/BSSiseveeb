@@ -18,38 +18,19 @@
 <h5 id="confirmedVacationStatus"></h5>
 <table id="confirmedVacations" class="table table-bordered">
     <thead>
-        <tr>
-            <th>Nimi</th>
-            <th>Puhkuse Algus</th>
-            <th>Puhkuse Lõpp</th>
-            <th>Lisainfo</th>
-            <th>Modify/Delete</th>
-        </tr>
+    <tr>
+        <th>Nimi</th>
+        <th>Puhkuse Algus</th>
+        <th>Puhkuse Lõpp</th>
+        <th>Lisainfo</th>
+        <th>Modify/Delete</th>
+    </tr>
     </thead>
     <tbody id="confirmedVacationsBody"></tbody>
 </table>
 
-<h3>Pending Requests</h3>
-<h5 id="requestStatus"></h5>
-<table id="requests" class="table table-bordered">
-    <thead>
-    <tr>
-        <th>Nimi</th>
-        <th>Taotlus</th>
-        <th>Lisainfo</th>
-        <th>Aeg</th>
-        <th>Approve/Decline</th>
-    </tr>
-    </thead>
-    <tbody id="requestsBody"></tbody>
-</table>
-
-<h3>@Html.ActionLink("Add Employee", "AddEmployee", "Admin")</h3>
-<h3>@Html.ActionLink("Edit Employees", "EditEmployees", "Admin")</h3>
-
-
 @section scripts {
     @Scripts.Render("~/Scripts/general.js")
     @Scripts.Render("~/Scripts/bootstrap-datepicker.js")
-    @Scripts.Render("~/Scripts/admin.js")  
+    @Scripts.Render("~/Scripts/adminVacations.js")
 }

@@ -243,6 +243,7 @@
     <Compile Include="Controllers\API\CalendarController.cs" />
     <Compile Include="Controllers\API\RequestsController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\API\Helpers\EmailHelper.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -268,7 +269,8 @@
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <Content Include="Scripts\addemployee.js" />
-    <Content Include="Scripts\admin.js" />
+    <Content Include="Scripts\adminrequests.js" />
+    <Content Include="Scripts\adminvacations.js" />
     <Content Include="Scripts\bootstrap-datepicker.js" />
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
@@ -318,12 +320,13 @@
     <Content Include="Views\Home\Calendar.cshtml" />
     <Content Include="Views\Home\Workers.cshtml" />
     <Content Include="Views\Home\Requests.cshtml" />
-    <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\EmployeeDto.cshtml" />
     <Content Include="Views\Admin\AddEmployee.cshtml" />
     <Content Include="Views\Admin\EditEmployees.cshtml" />
     <Content Include="Views\Admin\EditEmployee.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\AdminEmployee.cshtml" />
+    <Content Include="Views\Admin\Vacations.cshtml" />
+    <Content Include="Views\Admin\Requests.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

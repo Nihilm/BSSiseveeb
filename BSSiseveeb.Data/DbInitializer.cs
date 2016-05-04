@@ -24,7 +24,7 @@ namespace BSSiseveeb.Data
                 ContractEnd = new DateTime(2016, 5, 14),
                 PhoneNumber = "+37253489161",
                 VacationDays = 28,
-                Email = "test@test.ee"
+                Email = "bssiseveeb@gmail.com"
             };
 
             var emp2 = new Employee()
@@ -52,19 +52,31 @@ namespace BSSiseveeb.Data
             var adminRole = new Role
             {
                 Name = "Administrator",
-                Rights = AccessRights.All,
+                Rights = AccessRights.Administrator,
             };
 
             var userRole = new Role
             {
                 Name = "User",
-                Rights = AccessRights.Level1
+                Rights = AccessRights.Standard
             };
 
             var requestHandler = new Role()
             {
                 Name = "RequestHandler",
-                Rights = AccessRights.Level1 | AccessRights.Level2 | AccessRights.Level3 | AccessRights.Level4 
+                Rights = AccessRights.Standard | AccessRights.Requests 
+            };
+
+            var vacationHandler = new Role()
+            {
+                Name = "VacationHandler",
+                Rights = AccessRights.Standard | AccessRights.Vacations
+            };
+
+            var userHandler = new Role()
+            {
+                Name = "UserHandler",
+                Rights = AccessRights.Standard | AccessRights.Users
             };
 
             var user = new ApplicationUser()
@@ -73,10 +85,10 @@ namespace BSSiseveeb.Data
                 PasswordHash = _hasher.HashPassword("Password1"),
                 RoleId = adminRole.Id,
                 Messages = "no",
-                Email = "test@test.ee",
+                Email = "bssiseveeb@gmail.com",
                 EmailConfirmed = true,
                 LockoutEnabled = false,
-                UserName = "test@test.ee",
+                UserName = "admin",
                 SecurityStamp = Guid.NewGuid().ToString(),
                 Employee = emp1
             };
@@ -116,6 +128,8 @@ namespace BSSiseveeb.Data
             _ctx.Roles.Add(adminRole);
             _ctx.Roles.Add(userRole);
             _ctx.Roles.Add(requestHandler);
+            _ctx.Roles.Add(vacationHandler);
+            _ctx.Roles.Add(userHandler);
             _ctx.Users.Add(user);
             _ctx.Users.Add(user2);
             _ctx.Users.Add(user3);

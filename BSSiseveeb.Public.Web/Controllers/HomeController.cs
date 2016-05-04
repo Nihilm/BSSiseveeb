@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using BSSiseveeb.Core.Contracts.Repositories;
 using BSSiseveeb.Core.Domain;
 using BSSiseveeb.Core.Mappers;
-using BSSiseveeb.Data.Repositories;
 using BSSiseveeb.Public.Web.Attributes;
 using BSSiseveeb.Public.Web.Models;
-using Microsoft.AspNet.Identity.Owin;
-
 
 namespace BSSiseveeb.Public.Web.Controllers
 {
@@ -35,19 +30,19 @@ namespace BSSiseveeb.Public.Web.Controllers
             return View(new IndexViewModel() {Employees = employees, Vacations = vacations });
         }
 
-        [AuthorizeLevel(AccessRights.Level1)]
+        [AuthorizeLevel(AccessRights.Standard)]
         public ActionResult Workers()
         {
-            return View(new WorkersViewModel() {Employees = EmployeeRepository.AsDto()});
+            return View(new WorkersViewModel() {Employees = EmployeeRepository.AsDto().Where(x => x.ContractEnd == null || x.ContractEnd > DateTime.Now).ToList()});
         }
 
-        [AuthorizeLevel(AccessRights.Level1)]
+        [AuthorizeLevel(AccessRights.Standard)]
         public ActionResult Requests()
         {
             return View();
         }
 
-        [AuthorizeLevel(AccessRights.Level1)]
+        [AuthorizeLevel(AccessRights.Standard)]
         public ActionResult Calendar()
         {
             return View();

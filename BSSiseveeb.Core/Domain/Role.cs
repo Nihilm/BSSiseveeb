@@ -12,12 +12,11 @@ namespace BSSiseveeb.Core.Domain
     public enum AccessRights
     {
         None = 0,
-        Level1 = 1 << 0,
-        Level2 = 1 << 1,
-        Level3 = 1 << 2,
-        Level4 = 1 << 3,
-        Level5 = 1 << 4,
-        All = Level1 | Level2 | Level3 | Level4 | Level5
+        Standard = 1 << 0,
+        Requests = 1 << 1,
+        Vacations = 1 << 2,
+        Users = 1 << 3,
+        Administrator = Standard | Requests | Vacations | Users
     }
 }
 

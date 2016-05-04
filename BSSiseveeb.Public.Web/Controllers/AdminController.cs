@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.Security;
 using BSSiseveeb.Core.Domain;
 using BSSiseveeb.Core.Mappers;
 using BSSiseveeb.Data;
@@ -14,23 +12,29 @@ using Microsoft.AspNet.Identity.Owin;
 
 namespace BSSiseveeb.Public.Web.Controllers
 {
-    [AuthorizeLevel(AccessRights.Level4)]
     public class AdminController : BaseController
     {
         private PasswordHasher _hasher;
 
-        public ActionResult Index()
+        [AuthorizeLevel(AccessRights.Vacations)]
+        public ActionResult Vacations()
         {
             return View();
         }
 
-        [AuthorizeLevel(AccessRights.Level5)]
+        [AuthorizeLevel(AccessRights.Requests)]
+        public ActionResult Requests()
+        {
+            return View();
+        }
+
+        [AuthorizeLevel(AccessRights.Users)]
         public ActionResult AddEmployee()
         {
             return View();
         }
 
-        [AuthorizeLevel(AccessRights.Level5)]
+        [AuthorizeLevel(AccessRights.Users)]
         public ActionResult EditEmployees()
         {
             return View(new WorkersViewModel() {Employees = EmployeeRepository.AsDto().ToList()});
@@ -38,7 +42,7 @@ namespace BSSiseveeb.Public.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [AuthorizeApi(AccessRights.Level5)]
+        [AuthorizeApi(AccessRights.Users)]
         public ActionResult SetEmployee(RegistrationModel model)
         {
             _hasher = new PasswordHasher();
@@ -74,10 +78,10 @@ namespace BSSiseveeb.Public.Web.Controllers
             HttpContext.GetOwinContext().Get<BSContext>().SaveChanges();
             UserManager.AddToRole(user.Id, "user");
 
-            return View("Index");
+            return View("EditEmployees", new WorkersViewModel() { Employees = EmployeeRepository.AsDto().ToList() });
         }
 
-        [AuthorizeApi(AccessRights.Level5)]
+        [AuthorizeApi(AccessRights.Users)]
         public ActionResult ViewEmployee(int id)
         {
             var employee = EmployeeRepository.AsDto().First(x => x.Id == id);
@@ -105,7 +109,7 @@ namespace BSSiseveeb.Public.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [AuthorizeApi(AccessRights.Level5)]
+        [AuthorizeApi(AccessRights.Users)]
         public ActionResult EditEmployee(RegistrationModel model)
         {
             var employee = EmployeeRepository.First(x => x.Id == model.Id);
@@ -127,10 +131,14 @@ namespace BSSiseveeb.Public.Web.Controllers
 
             UserManager.Update(employee.Account);
             HttpContext.GetOwinContext().Get<BSContext>().SaveChanges();
-            UserManager.RemoveFromRole(employee.Account.Id, model.OldRole);
-            UserManager.AddToRole(employee.Account.Id, model.NewRole);
 
-            return View("Index");
+            if (model.NewRole != model.OldRole)
+            {
+                UserManager.RemoveFromRole(employee.Account.Id, model.OldRole);
+                UserManager.AddToRole(employee.Account.Id, model.NewRole);
+            }
+            
+            return View("EditEmployees", new WorkersViewModel() { Employees = EmployeeRepository.AsDto().ToList() });
         }
     }
 }

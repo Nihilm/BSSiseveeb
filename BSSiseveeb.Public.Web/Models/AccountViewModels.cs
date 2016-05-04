@@ -92,6 +92,8 @@ namespace BSSiseveeb.Public.Web.Models
         public string ConfirmPassword { get; set; }
 
         public string Message { get; set; }
+
+        public string Messages { get; set; }
     }
 
 }

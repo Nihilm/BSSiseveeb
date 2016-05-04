@@ -2,25 +2,20 @@
 var $vacationStatus = $("#vacationStatus");
 var $confirmedVacations = $("#confirmedVacationsBody");
 var $confirmedVacationStatus = $("#confirmedVacationStatus");
-var $requests = $("#requestsBody");
-var $requestStatus = $("#requestStatus");
 var isVisible = false;
 var date = new Date();
 var now = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
 
-
 $(document).ready(function () {
     drawVacations();
-    drawRequests();
     drawConfirmedVacations();
 });
-
 
 function drawVacations() {
     $.get('/API/AdminApi/GetPendingVacations').done(function (data) {
         if (data.Message) {
             $vacationStatus.empty().append("Teil puuduvad õigused näha pending puhkusi.");
-        } else { 
+        } else {
             $.each(data, function (key, item) {
                 var start = dateFormat(new Date(item.StartDate));
                 var end = dateFormat(new Date(item.EndDate));
@@ -70,11 +65,11 @@ function declineVacation(id) {
 }
 
 function drawConfirmedVacations() {
-    $.get('/API/AdminApi/GetConfirmedVacations').done(function(data) {
+    $.get('/API/AdminApi/GetConfirmedVacations').done(function (data) {
         if (data.Message) {
             $confirmedVacationStatus.empty().append("Teil puuduvad õigused näha confirmed puhkusi.");
         } else {
-            $.each(data, function(key, item) {
+            $.each(data, function (key, item) {
                 var start = dateFormat(new Date(item.StartDate));
                 var end = dateFormat(new Date(item.EndDate));
                 var comment = item.Comments;
@@ -126,57 +121,12 @@ function deleteVacation(id) {
         });
 }
 
-function drawRequests() {
-    $.get('/API/AdminApi/GetPendingRequests').done(function(data) {
-        if (data.Message) {
-            $requestStatus.empty().append("Teil puuduvad õigused näha pending taotlusi.");
-        } else {
-            $.each(data, function(key, item) {
-                var timestamp = dateFormat(new Date(item.TimeStamp));
-                $requests.append('<tr><td class="name">' + item.EmployeeId + '</td>' +
-                    '<td>' + item.Req + '</td>' +
-                    '<td>' + item.Description + '</td>' +
-                    '<td>' + timestamp + '</td>' +
-                    '<td><input type="submit" class="btn btn-submit" value="Approve" onClick="acceptRequest(' + item.Id + ')">' +
-                    '<input type="submit" class="btn btn-submit" value="Decline" onClick="declineRequest(' + item.Id + ')"></td>' +
-                    '</tr>');
-            });
-            setNames();
-        }
-    });
-}
-
-function acceptRequest(id) {
-    $.post('/API/AdminApi/ApproveRequest', { Id: id })
-        .success(function() {
-            $requests.empty();
-            drawRequests();
-            $requestStatus.empty().append("Tehing on lõpuni viidud");
-        })
-        .error(function() {
-            $requestStatus.empty().append("Midagi läks Valesti");
-        });
-}
-
-function declineRequest(id) {
-    $.post('/API/AdminApi/DeclineRequest', { Id: id })
-        .success(function () {
-            $requests.empty();
-            drawRequests();
-            $requestStatus.empty().append("Tehing on lõpuni viidud");
-        })
-        .error(function () {
-            $requestStatus.empty().append("Midagi läks Valesti");
-        });
-}
-
-
 function popover(id) {
     $("#Modify" + id).popover({
         html: true,
         trigger: 'manual',
         content: formatPopover(id)
-    }).on('click', function(e) {
+    }).on('click', function (e) {
         if (isVisible) {
             hideAllPopovers();
             isVisible = false;
@@ -207,7 +157,6 @@ function formatPopover(id) {
                 '</div>' +
             '</form>';
 }
-
 
 function hideAllPopovers() {
     $('.modify').each(function () {
@@ -253,6 +202,3 @@ function initDatepicker(datepickers) {
             });
     });
 }
-
-
-

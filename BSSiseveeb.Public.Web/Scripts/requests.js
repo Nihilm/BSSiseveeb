@@ -17,7 +17,7 @@ function sendRequest() {
             $title.val('');
             $info.val('');
         })
-        .error(function() {
-            $status.append("Midagi läks valesti");
+        .error(function(data) {
+            $status.append(data.responseJSON.Message);
         });
 }

@@ -1,0 +1,21 @@
+﻿<h1>Admin area</h1>
+<h3>Pending Requests</h3>
+<h5 id="requestStatus"></h5>
+<table id="requests" class="table table-bordered">
+    <thead>
+    <tr>
+        <th>Nimi</th>
+        <th>Taotlus</th>
+        <th>Lisainfo</th>
+        <th>Aeg</th>
+        <th>Approve/Decline</th>
+    </tr>
+    </thead>
+    <tbody id="requestsBody"></tbody>
+</table>
+
+@section scripts {
+    @Scripts.Render("~/Scripts/general.js")
+    @Scripts.Render("~/Scripts/bootstrap-datepicker.js")
+    @Scripts.Render("~/Scripts/adminRequests.js")
+}

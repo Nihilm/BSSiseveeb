@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Web;
 using System.Web.Http;
 using BSSiseveeb.Core.Contracts.Repositories;
@@ -45,10 +43,7 @@ namespace BSSiseveeb.Public.Web.Controllers.API
             {
                 return _userManager ?? HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
             }
-            private set
-            {
-                _userManager = value;
-            }
+            private set { _userManager = value; }
         }
 
         public ApplicationRoleManager RoleManager
@@ -57,10 +52,7 @@ namespace BSSiseveeb.Public.Web.Controllers.API
             {
                 return _roleManager ?? HttpContext.Current.GetOwinContext().GetUserManager<ApplicationRoleManager>();
             }
-            private set
-            {
-                _roleManager = value;
-            }
+            private set { _roleManager = value; }
         }
     }
 }
