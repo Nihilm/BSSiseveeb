@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using BSSiseveeb.Core.Domain;
+﻿using System.Collections.Generic;
 using BSSiseveeb.Core.Dto;
 
 namespace BSSiseveeb.Public.Web.Models
 {
-    public class WorkersViewModel
+    public class WorkersViewModel : BaseViewModel
     {
-        public IList<EmployeeDto> Employees { get; set; }
+        public List<EmployeeDto> Employees { get; set; }
     }
-    public class IndexViewModel
+
+    public class IndexViewModel : BaseViewModel
     {
         public List<string> Vacations { get; set; }
-        public IList<EmployeeDto> Employees { get; set; }
+        public List<EmployeeDto> Employees { get; set; }
     }
 }

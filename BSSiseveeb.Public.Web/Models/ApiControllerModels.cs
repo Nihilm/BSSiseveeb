@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+
 
 namespace BSSiseveeb.Public.Web.Models
 {
-    public class VacationModel
+    public class VacationModel : BaseViewModel
     {
         public int Id { get; set; }
         public DateTime Start { get; set; }
@@ -13,14 +11,21 @@ namespace BSSiseveeb.Public.Web.Models
         public string Comment { get; set; }
     }
 
-    public class GeneralIdModel
+    public class GeneralIdModel : BaseViewModel
     {
         public int Id { get; set; }
     }
 
-    public class RequestModel
+    public class RequestModel : BaseViewModel
     {
         public string Title { get; set; }
         public string Info { get; set; }
+    }
+
+    public class GeneratePdfModel : BaseViewModel
+    {
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }
+        public string Status { get; set; }
     }
 }

@@ -15,7 +15,7 @@
     {
         <ul class="frontPageColumn">
             <li><h4>Tänased sünnipäevalised:</h4></li>
-            @foreach (var employee in @Model.Employees)
+            @foreach (var employee in Model.Employees)
             {
                 <li>@employee.Name</li>
             }
@@ -26,7 +26,7 @@
         </ul>
         <ul class="frontPageColumn">
             <li><h4>Puhkused sellel Kuul:</h4></li>
-            @foreach (var vacation in @Model.Vacations)
+            @foreach (var vacation in Model.Vacations)
             {
                 <li>@vacation</li>
             }
@@ -37,13 +37,5 @@
         </ul>
     }
 </div>
-
-<div class="row">
-    <div class="col-md-4">
-        <h2>Uudis nr 1</h2>
-        <p>Sisu osa</p>
-    </div>
-</div>
-
 
 @Scripts.Render("~/Scripts/general.js")

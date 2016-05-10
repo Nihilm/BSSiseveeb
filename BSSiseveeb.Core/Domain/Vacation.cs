@@ -8,10 +8,13 @@ namespace BSSiseveeb.Core.Domain
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public int Days { get; set; }
-        public int EmployeeId { get; set; }
+        public string EmployeeId { get; set; }
         public VacationStatus Status { get; set; }
         public string Comments { get; set; }
+
+        public virtual Employee Employee { get; set; }
     }
+
     public enum VacationStatus
     {
         Approved,

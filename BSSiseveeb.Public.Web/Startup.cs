@@ -1,10 +1,5 @@
-﻿using System.Net;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Owin;
-using Owin;
+﻿using Owin;
 
-
-[assembly: OwinStartupAttribute(typeof(BSSiseveeb.Public.Web.Startup))]
 namespace BSSiseveeb.Public.Web
 {
     public partial class Startup

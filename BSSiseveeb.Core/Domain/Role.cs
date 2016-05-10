@@ -1,10 +1,11 @@
 ﻿using System;
-using Microsoft.AspNet.Identity.EntityFramework;
+using Sparkling.DataInterfaces.Domain;
 
 namespace BSSiseveeb.Core.Domain
 {
-    public class Role : IdentityRole
+    public class Role : Entity
     {
+        public string Name { get; set; }
         public AccessRights Rights { get; set; }
     }
 

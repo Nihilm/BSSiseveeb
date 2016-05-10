@@ -1,87 +1,31 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
+﻿using System.Web;
 using System.Web.Mvc;
+using System.Linq;
 using BSSiseveeb.Core.Domain;
-using BSSiseveeb.Public.Web.Attributes;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin.Security;
 using BSSiseveeb.Public.Web.Models;
+using Microsoft.Owin.Security;
+using Microsoft.Owin.Security.Cookies;
+using Microsoft.Owin.Security.OpenIdConnect;
+
 
 namespace BSSiseveeb.Public.Web.Controllers
 {
     [Authorize]
     public class AccountController : BaseController
     {
-        private ApplicationSignInManager _signInManager;
-        private ApplicationUserManager _userManager;
-
-        [AllowAnonymous]
-        public ActionResult Login(string returnUrl)
-        {
-            ViewBag.ReturnUrl = returnUrl;
-            return View();
-        }
-
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-
-            var result = await SignInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberMe, shouldLockout: true);
-            switch (result)
-            {
-                case SignInStatus.Success:
-                    return RedirectToLocal(returnUrl);
-                case SignInStatus.LockedOut:
-                    return View("Lockout");
-                case SignInStatus.Failure:
-                default:
-                    ModelState.AddModelError("", "Invalid login attempt.");
-                    return View(model);
-            }
-        }
-
-        
-        //
-        // GET: /Account/ConfirmEmail
-        [AllowAnonymous]
-        public async Task<ActionResult> ConfirmEmail(string userId, string code)
-        {
-            if (userId == null || code == null)
-            {
-                return View("Error");
-            }
-            var result = await UserManager.ConfirmEmailAsync(userId, code);
-            return View(result.Succeeded ? "ConfirmEmail" : "Error");
-        }
-        
-        // POST: /Account/LogOff
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult LogOff()
-        {
-            AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
-            return RedirectToAction("Index", "Home");
-        }
-
-
-        [AuthorizeLevel(AccessRights.Standard)]
         public ActionResult Index()
         {
-            var employee = EmployeeRepository.Single(x => x.Id == CurrentUser.EmployeeId);
+            var employee = EmployeeRepository.Single(x => x.Id == CurrentUser.Id);
             var model = new ChangeAccountSettingsViewModel()
             {
                 Phone = employee.PhoneNumber,
-                Email = employee.Email,
-                Messages = employee.Account.Messages
+                DailyBirthdayMessages = employee.DailyBirthdayMessages,
+                MonthlyBirthdayMessages = employee.MonthlyBirthdayMessages,
+                RequestMessages = employee.RequestMessages,
+                VacationMessages = employee.VacationMessages,
+                CurrentUserRole = CurrentUserRole
             };
+
             return View(model);
         }
 
@@ -89,66 +33,27 @@ namespace BSSiseveeb.Public.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult UpdateAccount(ChangeAccountSettingsViewModel model)
         {
+            if (!CurrentUser.Role.Rights.HasFlag(AccessRights.Standard))
+            {
+                return View("Error", new BaseViewModel() { CurrentUserRole = CurrentUserRole });
+            }
 
-            var employeeId = CurrentUser.EmployeeId;
-            var employee = EmployeeRepository.First(x => x.Id == employeeId);
-            employee.Email = model.Email;
+            var employee = EmployeeRepository.First(x => x.Id == CurrentUser.Id);
             employee.PhoneNumber = model.Phone;
+            employee.MonthlyBirthdayMessages = model.MonthlyBirthdayMessages;
+            employee.DailyBirthdayMessages = model.DailyBirthdayMessages;
+            employee.RequestMessages = model.RequestMessages;
+            employee.VacationMessages = model.VacationMessages;
+
 
             EmployeeRepository.SaveOrUpdate(employee);
             EmployeeRepository.Commit();
 
-            CurrentUser.Email = model.Email;
-            CurrentUser.Messages = model.Messages;
-            UserManager.Update(CurrentUser);
 
-            if (model.NewPassword != null)
-            {
-                var userId = CurrentUser.Id;
-                var result = UserManager.ChangePassword(userId, model.OldPassword, model.NewPassword);
-                model.OldPassword = "";
-                model.NewPassword = "";
-                model.ConfirmPassword = "";
-
-                if (result.Succeeded)
-                {
-                    model.Message = "Parooli vahetus õnnestus";
-                    return View("Index", model);
-                }
-
-                model.Message = "Parooli vahetus ebaõnnestus";
-                return View("Index", model);
-            }
-
-            model.OldPassword = "";
-            model.NewPassword = "";
-            model.ConfirmPassword = "";
             model.Message = "Teie andmed on salvestatud";
+            model.CurrentUserRole = CurrentUserRole;
             return View("Index", model);
         }
-
-
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                if (_userManager != null)
-                {
-                    _userManager.Dispose();
-                    _userManager = null;
-                }
-
-                if (_signInManager != null)
-                {
-                    _signInManager.Dispose();
-                    _signInManager = null;
-                }
-            }
-
-            base.Dispose(disposing);
-        }
-
 
         private IAuthenticationManager AuthenticationManager
         {
@@ -158,7 +63,7 @@ namespace BSSiseveeb.Public.Web.Controllers
             }
         }
 
-
+        [AllowAnonymous]
         private ActionResult RedirectToLocal(string returnUrl)
         {
             if (Url.IsLocalUrl(returnUrl))
@@ -166,6 +71,37 @@ namespace BSSiseveeb.Public.Web.Controllers
                 return Redirect(returnUrl);
             }
             return RedirectToAction("Index", "Home");
+        }
+
+        [AllowAnonymous]
+        public void SignIn()
+        {
+            //Send an OpenID Connect sign -in request.
+            if (!Request.IsAuthenticated)
+            {
+                HttpContext.GetOwinContext().Authentication.Challenge(new AuthenticationProperties { RedirectUri = "/" },
+                    OpenIdConnectAuthenticationDefaults.AuthenticationType);
+            }
+        }
+
+        public void SignOut()
+        {
+            string callbackUrl = Url.Action("SignOutCallback", "Account", routeValues: null, protocol: Request.Url.Scheme);
+
+            HttpContext.GetOwinContext().Authentication.SignOut(
+                new AuthenticationProperties { RedirectUri = callbackUrl },
+                OpenIdConnectAuthenticationDefaults.AuthenticationType, CookieAuthenticationDefaults.AuthenticationType);
+        }
+
+        public ActionResult SignOutCallback()
+        {
+            if (Request.IsAuthenticated)
+            {
+                //Redirect to home page if the user is authenticated.
+                return RedirectToAction("Index", "Home");
+            }
+
+            return View(new BaseViewModel() { CurrentUserRole = CurrentUserRole });
         }
     }
 }

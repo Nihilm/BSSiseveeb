@@ -1,0 +1,55 @@
+﻿@model BSSiseveeb.Private.Web.Models.GeneratePdfModel
+
+
+<h1>Admin area</h1>
+<h3>Pending Requests</h3>
+<h5 id="requestStatus"></h5>
+<table id="requests" class="table table-bordered">
+    <thead>
+    <tr>
+        <th>Nimi</th>
+        <th>Taotlus</th>
+        <th>Lisainfo</th>
+        <th>Aeg</th>
+        <th>Approve/Decline</th>
+    </tr>
+    </thead>
+    <tbody id="requestsBody"></tbody>
+</table>
+
+@using (Html.BeginForm("GeneratePdf", "Admin"))
+{
+    <div>
+        <h3>Genereeri PDF</h3>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Start, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="input-append date form-group col-md-10" id="dp1" data-date="" data-date-format="yyyy-mm-dd">
+                @Html.EditorFor(model => model.Start, new { htmlAttributes = new { @class = "form-control", @onClick = "showDatePicker('#dp1')" }})
+                <span class="add-on"><i class="icon-th"></i></span>
+                @Html.ValidationMessageFor(model => model.Start, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.End, htmlAttributes: new {@class = "control-label col-md-2"})
+            <div class="input-append date form-group col-md-10" id="dp2" data-date="" data-date-format="yyyy-mm-dd">
+                @Html.EditorFor(model => model.End, new {htmlAttributes = new {@class = "form-control", @onClick = "showDatePicker('#dp2')"}})
+                <span class="add-on"><i class="icon-th"></i></span>
+                @Html.ValidationMessageFor(model => model.End, "", new {@class = "text-danger"})
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Status, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.Status, new SelectList(new List<string> {"Pending", "Confirmed", "Declined"}), new { @class = "form-control"})
+                @Html.ValidationMessageFor(model => model.Status, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <input type="submit" class="btn btn-submit" value="Genereeri">
+    </div>
+}
+
+@section scripts {
+    @Scripts.Render("~/Scripts/general.js")
+    @Scripts.Render("~/Scripts/bootstrap-datepicker.js")
+    @Scripts.Render("~/Scripts/adminRequests.js")
+}

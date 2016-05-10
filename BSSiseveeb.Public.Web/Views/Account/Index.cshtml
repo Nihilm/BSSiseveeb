@@ -15,27 +15,6 @@
         <h4>Muuda kasutaja sätteid</h4>
         <hr/>
         <div class="form-group">
-            @Html.LabelFor(model => model.OldPassword, htmlAttributes: new {@class = "control-label col-md-2"})
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.OldPassword, new {htmlAttributes = new {@class = "form-control"}})
-                @Html.ValidationMessageFor(model => model.OldPassword, "", new {@class = "text-danger"})
-            </div>
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(model => model.NewPassword, htmlAttributes: new {@class = "control-label col-md-2"})
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.NewPassword, new {htmlAttributes = new {@class = "form-control"}})
-                @Html.ValidationMessageFor(model => model.NewPassword, "", new {@class = "text-danger"})
-            </div>
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(model => model.ConfirmPassword, htmlAttributes: new {@class = "control-label col-md-2"})
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.ConfirmPassword, new {htmlAttributes = new {@class = "form-control"}})
-                @Html.ValidationMessageFor(model => model.ConfirmPassword, "", new {@class = "text-danger"})
-            </div>
-        </div>
-        <div class="form-group">
             @Html.LabelFor(model => model.Phone, htmlAttributes: new {@class = "control-label col-md-2"})
             <div class="col-md-10">
                 @Html.EditorFor(model => model.Phone, new {htmlAttributes = new {@class = "form-control", @value = @Model.Phone}})
@@ -43,17 +22,31 @@
             </div>
         </div>
         <div class="form-group">
-            @Html.LabelFor(model => model.Email, htmlAttributes: new {@class = "control-label col-md-2"})
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Email, new {htmlAttributes = new {@class = "form-control", @value = @Model.Email}})
-                @Html.ValidationMessageFor(model => model.Email, "", new {@class = "text-danger"})
+            <div class="col-md-12">
+                @Html.CheckBoxFor(model => model.DailyBirthdayMessages, new { htmlAttributes = new { @class = "checkbox", @value = @Model.DailyBirthdayMessages } })
+                @Html.LabelFor(model => model.DailyBirthdayMessages, htmlAttributes: new { @class = "control-label" })
+                @Html.ValidationMessageFor(model => model.DailyBirthdayMessages, "", new { @class = "text-danger" })
             </div>
         </div>
         <div class="form-group">
-            @Html.LabelFor(model => model.Messages, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownListFor(model => model.Messages, new SelectList(new List<string>{"Yes", "No"}), new { @class = "form-control", @value = @Model.Messages })
-                @Html.ValidationMessageFor(model => model.Messages, "", new { @class = "text-danger" })
+            <div class="col-md-12">
+                @Html.CheckBoxFor(model => model.MonthlyBirthdayMessages, new { htmlAttributes = new { @class = "checkbox", @value = @Model.MonthlyBirthdayMessages } })
+                @Html.LabelFor(model => model.MonthlyBirthdayMessages, htmlAttributes: new { @class = "control-label" })
+                @Html.ValidationMessageFor(model => model.MonthlyBirthdayMessages, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-12">
+                @Html.CheckBoxFor(model => model.RequestMessages, new { htmlAttributes = new { @class = "checkbox", @value = @Model.RequestMessages } })
+                @Html.LabelFor(model => model.RequestMessages, htmlAttributes: new { @class = "control-label" })
+                @Html.ValidationMessageFor(model => model.RequestMessages, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-12">
+                @Html.CheckBoxFor(model => model.VacationMessages, new { htmlAttributes = new { @class = "checkbox", @value = @Model.VacationMessages } })
+                @Html.LabelFor(model => model.VacationMessages, htmlAttributes: new { @class = "control-label" })
+                @Html.ValidationMessageFor(model => model.VacationMessages, "", new { @class = "text-danger" })
             </div>
         </div>
         <input type="submit" class="btn btn-submit" value="Salvesta">

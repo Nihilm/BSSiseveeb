@@ -1,80 +1,78 @@
-﻿using System.Web;
-using System.Web.Mvc;
+﻿using BSSiseveeb.Core;
 using BSSiseveeb.Core.Contracts.Repositories;
 using BSSiseveeb.Core.Domain;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
+using BSSiseveeb.Data;
+using System.Linq;
+using System.Security.Claims;
+using System.Web.Mvc;
+using System.Configuration;
+using System.Threading.Tasks;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using BSSiseveeb.Public.Web.Models;
+using BSSiseveeb.Core.Mappers;
+using BSSiseveeb.Core.Dto;
 
 namespace BSSiseveeb.Public.Web.Controllers
 {
-    [Authorize]
     public abstract class BaseController : Controller
     {
-        private ApplicationSignInManager _signInManager;
-        private ApplicationUserManager _userManager;
-        private ApplicationRoleManager _roleManager;
         public IEmployeeRepository EmployeeRepository { get; set; }
         public IVacationRepository VacationRepository { get; set; }
         public IRequestRepository RequestRepository { get; set; }
+        public IRoleRepository RoleRepository { get; set; }
+        public IBSContextContextManager ContextManager { get; set; }
+        public string clientId = ConfigurationManager.AppSettings["ida:ClientId"];
+        public string appKey = ConfigurationManager.AppSettings["ida:ClientSecret"];
+        public string aadInstance = ConfigurationManager.AppSettings["ida:AADInstance"];
+        public string graphResourceID = "https://graph.windows.net";
 
-        public ApplicationSignInManager SignInManager
+        public string CurrentUserId
         {
             get
             {
-                return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
-            }
-            private set
-            {
-                _signInManager = value;
+                var identity = (ClaimsIdentity)ClaimsPrincipal.Current.Identity;
+                if(identity.IsAuthenticated == false)
+                {
+                     return "Guest";
+                }
+
+                return identity.FindFirst(AppClaims.ObjectIdentifier).Value;
             }
         }
 
-        public ApplicationUserManager UserManager
+        public Employee CurrentUser
         {
             get
             {
-                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-            }
-            private set
-            {
-                _userManager = value;
+                var userId = CurrentUserId;
+                if(userId == "Guest")
+                {
+                    return new Employee() { Role = new Role() { Rights = AccessRights.None } };
+                }
+                return EmployeeRepository.FirstOrDefault(x => x.Id == userId);
             }
         }
-
-        public ApplicationRoleManager RoleManager
+        public RoleDto CurrentUserRole
         {
             get
             {
-                return _roleManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationRoleManager>();
-            }
-            private set
-            {
-                _roleManager = value;
-            }
-        }
-
-        public string CurrentUserId => User.Identity.GetUserId();
-
-        public ApplicationUser CurrentUser
-        {
-            get
-            {
-                return HttpContext.GetOwinContext()
-                    .GetUserManager<ApplicationUserManager>()
-                    .FindById(CurrentUserId);
+                return CurrentUser.Role.AsDto();
             }
         }
 
 
-        protected override void Dispose(bool disposing)
+        public async Task<string> GetTokenForApplication()
         {
-            if (disposing && _userManager != null)
-            {
-                _userManager.Dispose();
-                _userManager = null;
-            }
+            string signedInUserID = ClaimsPrincipal.Current.FindFirst(ClaimTypes.NameIdentifier).Value;
+            string tenantID = ClaimsPrincipal.Current.FindFirst(AppClaims.TenantId).Value;
+            string userObjectID = ClaimsPrincipal.Current.FindFirst(AppClaims.ObjectIdentifier).Value;
 
-            base.Dispose(disposing);
+            // get a token for the Graph without triggering any user interaction (from the cache, via multi-resource refresh token, etc)
+            ClientCredential clientcred = new ClientCredential(clientId, appKey);
+            // initialize AuthenticationContext with the token cache of the currently signed in user, as kept in the app's database
+            AuthenticationContext authenticationContext = new AuthenticationContext(aadInstance + tenantID, new ADALTokenCache(signedInUserID, ContextManager));
+            AuthenticationResult authenticationResult = await authenticationContext.AcquireTokenSilentAsync(graphResourceID, clientcred, new UserIdentifier(userObjectID, UserIdentifierType.UniqueId));
+            return authenticationResult.AccessToken;
         }
     }
 }

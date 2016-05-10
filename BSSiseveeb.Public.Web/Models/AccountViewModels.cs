@@ -4,31 +4,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BSSiseveeb.Public.Web.Models
 {
-    public class LoginViewModel
+    public class RegistrationModel : BaseViewModel
     {
-        [Required]
-        [Display(Name = "Username")]
-        public string Username { get; set; }
-
-        [Required]
-        [DataType(DataType.Password)]
-        [Display(Name = "Password")]
-        public string Password { get; set; }
-
-        [Display(Name = "Remember me?")]
-        public bool RememberMe { get; set; }
-    }
-
-    public class RegistrationModel
-    {
-        public int Id { get; set; }
-
-        [Required]
-        [StringLength(50, MinimumLength = 6, ErrorMessage="Kasutajanimi peab olema vähemalt 6 tähemärki pikk")]
-        public string Username { get; set; }
-
-        [Required]
-        [StringLength(50, MinimumLength = 6)]
+        public string Id { get; set; }
         public string Name { get; set; }
 
         [DataType(DataType.PhoneNumber)]
@@ -37,22 +15,15 @@ namespace BSSiseveeb.Public.Web.Models
         [Required]
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
-
-        [Required]
+        
         [DataType(DataType.Date)]
-        public DateTime Start { get; set; }
+        public DateTime? Start { get; set; }
 
         [DataType(DataType.Date)]
         public DateTime? End { get; set; }
 
-        [Required]
         [DataType(DataType.Date)]
-        public DateTime BirthDay { get; set; }
-
-        [Required]
-        [DataType(DataType.Password)]
-        [StringLength(50, MinimumLength = 6, ErrorMessage = "Kasutajanimi peab olema vähemalt 6 tähemärki pikk")]
-        public string Password { get; set; }
+        public DateTime? BirthDay { get; set; }
 
         [Required]
         public int VacationDays { get; set; }
@@ -65,35 +36,24 @@ namespace BSSiseveeb.Public.Web.Models
         public List<string> Roles { get; set; } 
     }
 
-    public class ChangeAccountSettingsViewModel
+    public class ChangeAccountSettingsViewModel : BaseViewModel
     {
         [DataType(DataType.PhoneNumber)]
         public string Phone { get; set; }
 
-        [Required]
-        [DataType(DataType.EmailAddress)]
-        public string Email { get; set; }
+        [Display(Name = "Messages about vacations")]
+        public bool VacationMessages { get; set; }
 
-        [Required]
-        [StringLength(50, MinimumLength = 6)]
-        [DataType(DataType.Password)]
-        [Display(Name = "Current password")]
-        public string OldPassword { get; set; }
+        [Display(Name = "Messages about requests")]
+        public bool RequestMessages { get; set; }
 
-        [StringLength(50, MinimumLength = 6)]
-        [DataType(DataType.Password)]
-        [Display(Name = "New password")]
-        public string NewPassword { get; set; }
+        [Display(Name = "Subscribe to monthly birthday message")]
+        public bool MonthlyBirthdayMessages { get; set; }
 
-        [StringLength(50, MinimumLength = 6)]
-        [DataType(DataType.Password)]
-        [Display(Name = "Confirm new password")]
-        [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
-        public string ConfirmPassword { get; set; }
+        [Display(Name = "Subscribe to daily birthday message")]
+        public bool DailyBirthdayMessages { get; set; }
 
         public string Message { get; set; }
-
-        public string Messages { get; set; }
     }
 
 }

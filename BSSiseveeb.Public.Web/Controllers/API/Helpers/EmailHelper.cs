@@ -7,7 +7,7 @@ namespace BSSiseveeb.Public.Web.Controllers.API.Helpers
 {
     public class EmailHelper
     {
-        public static void SendEmail(List<String> emails, String subject, String body)
+        public static void SendEmail(IEnumerable<String> emails, String subject, String body)
         {
             var message = new MailMessage();
             foreach (var email in emails)

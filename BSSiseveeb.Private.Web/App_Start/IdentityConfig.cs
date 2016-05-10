@@ -13,9 +13,9 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
-using BSSiseveeb.Public.Web.Models;
+using BSSiseveeb.Private.Web.Models;
 
-namespace BSSiseveeb.Public.Web
+namespace BSSiseveeb.Private.Web
 {
     public class EmailService : IIdentityMessageService
     {

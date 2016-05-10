@@ -46,14 +46,6 @@
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.AspNet.Identity.EntityFramework, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.2.1\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Sparkling.Data, Version=6.1.1.8, Culture=neutral, PublicKeyToken=4ccd1e706d84f591, processorArchitecture=MSIL">
       <HintPath>..\packages\Sparkling.Data.ef6.6.1.1.8\lib\net45\Sparkling.Data.dll</HintPath>
       <Private>True</Private>
@@ -73,20 +65,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppClaims.cs" />
     <Compile Include="Contracts\Repositories\IEmployeeRepository.cs" />
     <Compile Include="Contracts\Repositories\IRequestRepository.cs" />
+    <Compile Include="Contracts\Repositories\IRoleRepository.cs" />
     <Compile Include="Contracts\Repositories\IVacationRepository.cs" />
-    <Compile Include="Domain\ApplicationUser.cs" />
     <Compile Include="Domain\Employee.cs" />
     <Compile Include="Domain\Role.cs" />
     <Compile Include="Domain\Request.cs" />
+    <Compile Include="Domain\UserTokenCache.cs" />
     <Compile Include="Domain\Vacation.cs" />
     <Compile Include="Dto\EmployeeDto.cs" />
     <Compile Include="Dto\RequestDto.cs" />
+    <Compile Include="Dto\RoleDto.cs" />
     <Compile Include="Dto\VacationDto.cs" />
     <Compile Include="IoC.cs" />
     <Compile Include="Mappers\EmployeeMapper.cs" />
     <Compile Include="Mappers\RequestMapper.cs" />
+    <Compile Include="Mappers\RoleMapper.cs" />
     <Compile Include="Mappers\VacationMapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -94,6 +90,7 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -3,7 +3,7 @@ using Sparkling.DataInterfaces;
 
 namespace BSSiseveeb.Core.Contracts.Repositories
 {
-    public interface IEmployeeRepository : IRepository<Employee>
+    public interface IEmployeeRepository : IRepositoryWithTypedId<Employee, string>
     {
 
     }

@@ -1,10 +1,11 @@
 ﻿using BSSiseveeb.Core.Contracts.Repositories;
 using BSSiseveeb.Core.Domain;
-using Sparkling.Data.Repositories;
+using BSSiseveeb.Data.Repositories.Base;
 
 namespace BSSiseveeb.Data.Repositories
 {
-    public class EmployeeRepository : Repository<Employee>, IEmployeeRepository
+    public class EmployeeRepository : RepositoryWithStringId<Employee>, IEmployeeRepository
     {
+
     }
 }

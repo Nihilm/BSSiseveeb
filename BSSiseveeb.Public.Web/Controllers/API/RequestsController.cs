@@ -9,12 +9,17 @@ using BSSiseveeb.Public.Web.Models;
 
 namespace BSSiseveeb.Public.Web.Controllers.API
 {
+    [Authorize]
     public class RequestsController : BaseApiController
     {
         [HttpPost]
-        [AuthorizeApi(AccessRights.Standard)]
         public IHttpActionResult SetRequest(RequestModel model)
         {
+            if (!CurrentUser.Role.Rights.HasFlag(AccessRights.Standard))
+            {
+                return BadRequest("ERROR: Teil Puuduvad kasutaja õigused");
+            }
+
             var title = model.Title;
             var info = model.Info;
 
@@ -23,26 +28,25 @@ namespace BSSiseveeb.Public.Web.Controllers.API
                 return BadRequest("ERROR: Taotlusel puudub pealkiri");
             }
 
-            var currentUser = CurrentUser.EmployeeId;
-
             RequestRepository.AddIfNew(new Request()
             {
                 Req = title,
                 Description = info,
-                EmployeeId = currentUser,
+                EmployeeId = CurrentUser.Id,
                 Status = RequestStatus.Pending,
                 TimeStamp = DateTime.Now
             });
 
             RequestRepository.Commit();
-            var roles = RoleManager.Roles.Where(x => x.Rights.HasFlag(AccessRights.Requests)).Select(x => x.Id);
-            var emails = EmployeeRepository.Where(x => x.Account.Messages == "Yes" && roles.Contains(x.Account.RoleId)).Select(x => x.Email).ToList();
+            var emails = EmployeeRepository
+                    .Where(x => x.RequestMessages == true && x.Role.Rights.HasFlag(AccessRights.Requests)).Select(x => x.Email).ToList();
+
             var subject = "New request";
-            var body = $"<p> New request from {CurrentUser.Employee.Name}, he/she needs {model.Title}. Additional information: {model.Info} </p>";
+            var body = $"<p> New request from {CurrentUser.Name}, he/she needs {model.Title}. Additional information: {model.Info} </p>";
 
             EmailHelper.SendEmail(emails, subject, body);
 
             return Ok();
-        } 
+        }
     }
 }

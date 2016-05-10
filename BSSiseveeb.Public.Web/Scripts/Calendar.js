@@ -51,7 +51,6 @@ $(document).ready(function () {
 
 function showDatePicker(dp) {
     $(dp).datepicker('show');
-
 }
 
 function daysInMonth() {
@@ -113,7 +112,7 @@ function drawCalendar() {
     for (var i = 0; i < employees.length; i++) {
         $calendarBody.append('<tr id="' + employees[i].Id + '"><td class="firstColumn">' + employees[i].Name + '</td></tr>');
         for (var k = 1; k <= daysInMonth() ; k++) {
-            $("#" + (i + 1)).append("<td></td>");
+            $("#" + employees[i].Id).append("<td></td>");
         }
     }
 }

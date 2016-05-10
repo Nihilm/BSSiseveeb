@@ -1,36 +1,39 @@
-﻿using System;
-using System.Web;
-using System.Web.Http;
+﻿using System.Web.Http;
 using System.Web.Http.Controllers;
 using BSSiseveeb.Core.Domain;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
-
+using BSSiseveeb.Core.Contracts.Repositories;
+using System.Security.Claims;
+using BSSiseveeb.Core;
+using System.Linq;
+using System;
+using BSSiseveeb.Data.Repositories;
 
 namespace BSSiseveeb.Public.Web.Attributes
 {
     public class AuthorizeApiAttribute : AuthorizeAttribute
     {
+      /*  
         public AccessRights Rights { get; set; }
+        public AccessRights Check { get; set; }
 
-        public AuthorizeApiAttribute(AccessRights rights)
+        public AuthorizeApiAttribute(AccessRights rights, AccessRights check)
         {
             this.Rights = rights;
+            this.Check = check;
         }
 
         protected override bool IsAuthorized(HttpActionContext actionContext)
         {
-            var httpContext = HttpContext.Current;
-            var owin = httpContext.GetOwinContext();
-            var roleManager = owin.GetUserManager<ApplicationRoleManager>();
-            var userManager = owin.GetUserManager<ApplicationUserManager>();
-            var id = httpContext.User.Identity.GetUserId();
+            var repository = new EmployeeRepository();
+
+            var identity = (ClaimsIdentity)ClaimsPrincipal.Current.Identity;
+            var id = identity.FindFirst(AppClaims.ObjectIdentifier).Value;
+            var employee = repository.FirstOrDefault(x => x.Id == id);
 
             try
             {
-                if (httpContext.User.Identity.IsAuthenticated &&
-                    roleManager.FindById(userManager.FindById(id).RoleId)
-                    .Rights.HasFlag(Rights))
+                if (identity.IsAuthenticated &&
+                    Rights.HasFlag(Check))
                 {
                     return true;
                 }
@@ -41,6 +44,6 @@ namespace BSSiseveeb.Public.Web.Attributes
             {
                 return false;
             }
-        }
+        }*/
     }
 }

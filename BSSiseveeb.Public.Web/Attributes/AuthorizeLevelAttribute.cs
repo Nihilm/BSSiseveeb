@@ -1,46 +1,45 @@
-﻿using System;
-using System.Web;
+﻿using System.Web;
 using System.Web.Mvc;
+using System.Linq;
 using BSSiseveeb.Core.Domain;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
-
+using System;
+using System.Security.Claims;
+using BSSiseveeb.Core;
+using BSSiseveeb.Core.Contracts.Repositories;
+using BSSiseveeb.Data.Repositories;
 
 namespace BSSiseveeb.Public.Web.Attributes
 {
 
     public class AuthorizeLevelAttribute : AuthorizeAttribute
     {
-        public AccessRights Rights { get; set; }
+         /*public AccessRights Rights { get; set; }
 
-        public AuthorizeLevelAttribute(AccessRights rights)
-        {
-            this.Rights = rights;
-        }
-
-        protected override bool AuthorizeCore(HttpContextBase httpContext)
-        {
-            var owin = httpContext.GetOwinContext();
-            var roleManager = owin.GetUserManager<ApplicationRoleManager>();
-            var userManager = owin.GetUserManager<ApplicationUserManager>();
-            var id = httpContext.User.Identity.GetUserId();
-
-            try
+            public AuthorizeLevelAttribute(AccessRights rights, AccessRights check)
             {
-                if (httpContext.User.Identity.IsAuthenticated &&
-                    roleManager.FindById(userManager.FindById(id).RoleId)
-                    .Rights.HasFlag(Rights))
+                this.Rights = rights;
+            }
+
+            protected override bool AuthorizeCore(HttpContextBase httpContext)
+            {
+
+                var identity = (ClaimsIdentity)ClaimsPrincipal.Current.Identity;
+
+                try
                 {
-                    return true;
-                }
+                    if (identity.IsAuthenticated &&
+                        Rights.HasFlag(Check))
+                    {
+                        return true;
+                    }
 
-                return false;
-            }
-            catch (NullReferenceException)
-            {
-                return false;
-            }
-        }
+                    return false;
+                }
+                catch (NullReferenceException)
+                {
+                    return false;
+                }
+            }*/
     }
 }
 

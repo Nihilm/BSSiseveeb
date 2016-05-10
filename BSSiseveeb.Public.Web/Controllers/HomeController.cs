@@ -9,17 +9,23 @@ using BSSiseveeb.Public.Web.Models;
 
 namespace BSSiseveeb.Public.Web.Controllers
 {
+    [Authorize]
     public class HomeController : BaseController
     {
-
+        [AllowAnonymous]
         public ActionResult Index()
         {
-            var employees = EmployeeRepository.AsDto().Where(x => x.Birthdate.Month == DateTime.Now.Month && x.Birthdate.Day == DateTime.Now.Day).ToList();
+            var employees = EmployeeRepository
+                                .Where(x => x.Birthdate.HasValue)
+                                .Where(x => x.Birthdate.Value.Month == DateTime.Now.Month && x.Birthdate.Value.Day == DateTime.Now.Day)
+                                .AsDto();
+
             var vacations = new List<string>();
-            var repoVacations = VacationRepository.AsDto()
+            var repoVacations = VacationRepository
                                     .Where(x => x.StartDate.Month == DateTime.Now.Month || x.EndDate.Month == DateTime.Now.Month)
                                     .Where(x => x.Status == VacationStatus.Approved)
-                                    .OrderBy(x => x.StartDate).ToList();
+                                    .OrderBy(x => x.StartDate)
+                                    .AsDto();
 
             foreach (var vacation in repoVacations)
             {
@@ -27,26 +33,34 @@ namespace BSSiseveeb.Public.Web.Controllers
                 vacations.Add(employee + " " + vacation.StartDate.ToString("d") + " - " + vacation.EndDate.ToString("d"));
             }
 
-            return View(new IndexViewModel() {Employees = employees, Vacations = vacations });
+            return View(new IndexViewModel() { Employees = employees.ToList(), Vacations = vacations, CurrentUserRole = CurrentUserRole });
         }
 
-        [AuthorizeLevel(AccessRights.Standard)]
         public ActionResult Workers()
         {
-            return View(new WorkersViewModel() {Employees = EmployeeRepository.AsDto().Where(x => x.ContractEnd == null || x.ContractEnd > DateTime.Now).ToList()});
+            if (!CurrentUser.Role.Rights.HasFlag(AccessRights.Standard))
+            {
+                return View("Error", new BaseViewModel() { CurrentUserRole = CurrentUserRole });
+            }
+            return View(new WorkersViewModel() { Employees = EmployeeRepository.AsDto().Where(x => x.ContractEnd == null || x.ContractEnd > DateTime.Now).ToList(), CurrentUserRole = CurrentUserRole });
         }
 
-        [AuthorizeLevel(AccessRights.Standard)]
         public ActionResult Requests()
         {
-            return View();
+            if (!CurrentUser.Role.Rights.HasFlag(AccessRights.Standard))
+            {
+                return View("Error", new BaseViewModel() { CurrentUserRole = CurrentUserRole });
+            }
+            return View(new BaseViewModel() { CurrentUserRole = CurrentUserRole });
         }
 
-        [AuthorizeLevel(AccessRights.Standard)]
         public ActionResult Calendar()
         {
-            return View();
+            if (!CurrentUser.Role.Rights.HasFlag(AccessRights.Standard))
+            {
+                return View("Error", new BaseViewModel() { CurrentUserRole = CurrentUserRole });
+            }
+            return View(new BaseViewModel() { CurrentUserRole = CurrentUserRole });
         }
-
     }
 }

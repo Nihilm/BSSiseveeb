@@ -2,7 +2,14 @@
 
 <tr>
     <td>@Model.Name</td>
-    <td>@Model.Birthdate.ToString("dd MMM yyyy")</td>
+    @if(Model.Birthdate.HasValue)
+    {
+        <td>@Model.Birthdate.Value.ToString("dd MMM yyyy")</td>
+    }
+    else
+    {
+        <td> </td>
+    }
     <td>@Model.PhoneNumber</td>
     <td>@Model.Email</td>
 </tr>
