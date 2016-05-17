@@ -10,57 +10,60 @@ using BSSiseveeb.Public.Web.Models;
 namespace BSSiseveeb.Public.Web.Controllers
 {
     [Authorize]
-    public class HomeController : BaseController
+    public partial class HomeController : BaseController
     {
         [AllowAnonymous]
-        public ActionResult Index()
+        public virtual ActionResult Index()
         {
-            var employees = EmployeeRepository
-                                .Where(x => x.Birthdate.HasValue)
-                                .Where(x => x.Birthdate.Value.Month == DateTime.Now.Month && x.Birthdate.Value.Day == DateTime.Now.Day)
-                                .AsDto();
+            if (User.Identity.IsAuthenticated)
+            {
+                if (!CurrentUser.IsInitialized)
+                {
+                    return View(MVC.Home.Views.Initial, new ChangeAccountSettingsViewModel { Phone = CurrentUser.PhoneNumber });
+                }
 
-            var vacations = new List<string>();
-            var repoVacations = VacationRepository
-                                    .Where(x => x.StartDate.Month == DateTime.Now.Month || x.EndDate.Month == DateTime.Now.Month)
-                                    .Where(x => x.Status == VacationStatus.Approved)
-                                    .OrderBy(x => x.StartDate)
+                var employees = EmployeeRepository
+                                    .Where(x => x.Birthdate.HasValue)
+                                    .Where(x => x.Birthdate.Value.Month == DateTime.Now.Month && x.Birthdate.Value.Day == DateTime.Now.Day)
                                     .AsDto();
 
-            foreach (var vacation in repoVacations)
-            {
-                var employee = EmployeeRepository.AsDto().Single(x => x.Id == vacation.EmployeeId).Name;
-                vacations.Add(employee + " " + vacation.StartDate.ToString("d") + " - " + vacation.EndDate.ToString("d"));
-            }
+                var vacations = new List<string>();
+                var repoVacations = VacationRepository
+                                        .Where(x => x.StartDate.Month == DateTime.Now.Month || x.EndDate.Month == DateTime.Now.Month)
+                                        .Where(x => x.Status == VacationStatus.Approved)
+                                        .OrderBy(x => x.StartDate)
+                                        .AsDto();
 
-            return View(new IndexViewModel() { Employees = employees.ToList(), Vacations = vacations, CurrentUserRole = CurrentUserRole });
+                foreach (var vacation in repoVacations)
+                {
+                    var employee = EmployeeRepository.Single(x => x.Id == vacation.EmployeeId).AsDto().Name;
+                    vacations.Add(employee + " " + vacation.StartDate.ToString("d") + " - " + vacation.EndDate.ToString("d"));
+                }
+
+                return View(new IndexViewModel() { Employees = employees, Vacations = vacations });
+            }
+            else
+            {
+                return View(MVC.Home.Views.Public);
+            }
         }
 
-        public ActionResult Workers()
+        [AuthorizeLevel(AccessRights.Standard)]
+        public virtual ActionResult Workers()
         {
-            if (!CurrentUser.Role.Rights.HasFlag(AccessRights.Standard))
-            {
-                return View("Error", new BaseViewModel() { CurrentUserRole = CurrentUserRole });
-            }
-            return View(new WorkersViewModel() { Employees = EmployeeRepository.AsDto().Where(x => x.ContractEnd == null || x.ContractEnd > DateTime.Now).ToList(), CurrentUserRole = CurrentUserRole });
+            return View(new WorkersViewModel() { Employees = EmployeeRepository.Where(x => x.ContractEnd == null || x.ContractEnd > DateTime.Now).AsDto() });
         }
 
-        public ActionResult Requests()
+        [AuthorizeLevel(AccessRights.Standard)]
+        public virtual ActionResult Requests()
         {
-            if (!CurrentUser.Role.Rights.HasFlag(AccessRights.Standard))
-            {
-                return View("Error", new BaseViewModel() { CurrentUserRole = CurrentUserRole });
-            }
-            return View(new BaseViewModel() { CurrentUserRole = CurrentUserRole });
+            return View();
         }
 
-        public ActionResult Calendar()
+        [AuthorizeLevel(AccessRights.Standard)]
+        public virtual ActionResult Calendar()
         {
-            if (!CurrentUser.Role.Rights.HasFlag(AccessRights.Standard))
-            {
-                return View("Error", new BaseViewModel() { CurrentUserRole = CurrentUserRole });
-            }
-            return View(new BaseViewModel() { CurrentUserRole = CurrentUserRole });
+            return View();
         }
     }
 }

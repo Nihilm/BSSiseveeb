@@ -146,9 +146,22 @@ function drawMyVacations() {
             $.each(data, function(key, item) {
                 var start = dateFormat(new Date(item.StartDate));
                 var end = dateFormat(new Date(item.EndDate));
-                var status = "Approved";
-                if (!item.Status == 0) {
-                    status = "Pending";
+                var status;
+                switch (item.Status) {
+                    case 0:
+                        status = "Approved";
+                        break;
+                    case 1:
+                        status = "Declined";
+                        break;
+                    case 2:
+                        status = "Pending";
+                        break;
+                    case 3:
+                        status = "Retired";
+                        break;
+                    default:
+                        status = "Unknown";
                 }
                 $myVacations.append('<tr><td>' + start + '</td>' +
                     '<td>' + end + '</td>' +

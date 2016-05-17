@@ -6,6 +6,7 @@ using BSSiseveeb.Core.Domain;
 using BSSiseveeb.Public.Web.Attributes;
 using BSSiseveeb.Public.Web.Controllers.API.Helpers;
 using BSSiseveeb.Public.Web.Models;
+using BSSiseveeb.Core.Mappers;
 
 namespace BSSiseveeb.Public.Web.Controllers.API
 {
@@ -13,13 +14,9 @@ namespace BSSiseveeb.Public.Web.Controllers.API
     public class RequestsController : BaseApiController
     {
         [HttpPost]
+        [AuthorizeApi(AccessRights.Standard)]
         public IHttpActionResult SetRequest(RequestModel model)
         {
-            if (!CurrentUser.Role.Rights.HasFlag(AccessRights.Standard))
-            {
-                return BadRequest("ERROR: Teil Puuduvad kasutaja õigused");
-            }
-
             var title = model.Title;
             var info = model.Info;
 
@@ -28,23 +25,48 @@ namespace BSSiseveeb.Public.Web.Controllers.API
                 return BadRequest("ERROR: Taotlusel puudub pealkiri");
             }
 
-            RequestRepository.AddIfNew(new Request()
+            var request = new Request()
             {
                 Req = title,
                 Description = info,
                 EmployeeId = CurrentUser.Id,
                 Status = RequestStatus.Pending,
                 TimeStamp = DateTime.Now
-            });
+            };
+
+            RequestRepository.AddIfNew(request);
 
             RequestRepository.Commit();
             var emails = EmployeeRepository
                     .Where(x => x.RequestMessages == true && x.Role.Rights.HasFlag(AccessRights.Requests)).Select(x => x.Email).ToList();
 
-            var subject = "New request";
-            var body = $"<p> New request from {CurrentUser.Name}, he/she needs {model.Title}. Additional information: {model.Info} </p>";
+            EmailHelper.RequestRequested(request, emails);
 
-            EmailHelper.SendEmail(emails, subject, body);
+            return Ok();
+        }
+
+        [HttpGet]
+        [AuthorizeApi(AccessRights.Standard)]
+        public IHttpActionResult GetMyRequest()
+        {
+            return Ok(RequestRepository
+                .Where(x => x.EmployeeId == CurrentUser.Id && x.Cleared == false)
+                .OrderByDescending(x => x.TimeStamp)
+                .AsDto());
+        }
+
+        [HttpPost]
+        [AuthorizeApi(AccessRights.Standard)]
+        public IHttpActionResult RemoveVacation(GeneralIdModel model)
+        {
+            var request = RequestRepository.First(x => x.Id == model.Id);
+            if(request.Status == RequestStatus.Pending)
+            {
+                request.Status = RequestStatus.Cancelled;
+            }
+            request.Cleared = true;
+            RequestRepository.SaveOrUpdate(request);
+            RequestRepository.Commit();
 
             return Ok();
         }

@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using BSSiseveeb.Core.Domain;
-using BSSiseveeb.Core.Dto;
 using BSSiseveeb.Core.Mappers;
 using BSSiseveeb.Data;
 using BSSiseveeb.Public.Web.Attributes;
@@ -13,19 +11,15 @@ using BSSiseveeb.Public.Web.Models;
 
 namespace BSSiseveeb.Public.Web.Controllers.API
 {
-    [Authorize]
+    
     public class AdminApiController : BaseApiController
     {
         public IBSContextContextManager ContextManager { get; set; }
 
         [HttpGet]
+        [AuthorizeApi(AccessRights.Vacations)]
         public IHttpActionResult GetPendingVacations()
         {
-            if (!CurrentUser.Role.Rights.HasFlag(AccessRights.Vacations))
-            {
-                return BadRequest("ERROR: Teil Puuduvad õigused puhkuste üle");
-            }
-
             return Ok(VacationRepository
             .Where(x => x.Status == VacationStatus.Pending)
             .OrderBy(x => x.StartDate)
@@ -33,12 +27,9 @@ namespace BSSiseveeb.Public.Web.Controllers.API
         }
 
         [HttpGet]
+        [AuthorizeApi(AccessRights.Requests)]
         public IHttpActionResult GetPendingRequests()
         {
-            if (!CurrentUser.Role.Rights.HasFlag(AccessRights.Requests))
-            {
-                return BadRequest("ERROR: Teil Puuduvad õigused taotluste üle");
-            }
             return Ok(RequestRepository
                 .Where(x => x.Status == RequestStatus.Pending)
                 .OrderBy(x => x.TimeStamp)
@@ -46,13 +37,9 @@ namespace BSSiseveeb.Public.Web.Controllers.API
         }
 
         [HttpPost]
+        [AuthorizeApi(AccessRights.Vacations)]
         public IHttpActionResult ApproveVacation(GeneralIdModel model)
         {
-            if (!CurrentUser.Role.Rights.HasFlag(AccessRights.Vacations))
-            {
-                return BadRequest("ERROR: Teil Puuduvad õigused puhkuste üle");
-            }
-
             var vacation = VacationRepository.FirstOrDefault(x => x.Id == model.Id);
             if (vacation == null)
             {
@@ -68,22 +55,16 @@ namespace BSSiseveeb.Public.Web.Controllers.API
                 .Select(x => x.Email)
                 .ToList();
 
-            var subject = "Approved Vacation";
-            var body = "<p>Your Vacation has been Approved</p>";
-            EmailHelper.SendEmail(emails, subject, body);
+            EmailHelper.VacationApproved(vacation, emails);
 
             return Ok();
         }
     
         
         [HttpPost]
+        [AuthorizeApi(AccessRights.Requests)]
         public IHttpActionResult ApproveRequest(GeneralIdModel model)
         {
-            if (!CurrentUser.Role.Rights.HasFlag(AccessRights.Requests))
-            {
-                return BadRequest("ERROR: Teil Puuduvad õigused taotluste üle");
-            }
-
             var request = RequestRepository.FirstOrDefault(x => x.Id == model.Id);
             if (request == null)
             {
@@ -95,43 +76,32 @@ namespace BSSiseveeb.Public.Web.Controllers.API
             RequestRepository.Commit();
 
             var emails = EmployeeRepository.Where(x => x.RequestMessages == true && x.Id == request.EmployeeId).Select(x => x.Email).ToList();
-            var subject = "Approved Request";
-            var body = "<p>Your Request has been approved</p>";
-            EmailHelper.SendEmail(emails, subject, body);
+            EmailHelper.RequestApproved(request, emails);
 
             return Ok();
         }
 
         
         [HttpPost]
+        [AuthorizeApi(AccessRights.Requests)]
         public IHttpActionResult DeclineRequest(GeneralIdModel model)
         {
-            if (!CurrentUser.Role.Rights.HasFlag(AccessRights.Requests))
-            {
-                return BadRequest("ERROR: Teil Puuduvad õigused taotluste üle");
-            }
-
             var request = RequestRepository.First(x => x.Id == model.Id);
             request.Status = RequestStatus.Declined;
             RequestRepository.SaveOrUpdate(request);
             RequestRepository.Commit();
 
             var emails = EmployeeRepository.Where(x => x.RequestMessages == true && x.Id == request.EmployeeId).Select(x => x.Email).ToList();
-            var subject = "Denied Request";
-            var body = "<p>Your Request has been denied</p>";
-            EmailHelper.SendEmail(emails, subject, body);
+            EmailHelper.RequestDenied(request, emails);
 
             return Ok();
         }
 
         
         [HttpGet]
+        [AuthorizeApi(AccessRights.Vacations)]
         public IHttpActionResult GetConfirmedVacations()
         {
-            if (!CurrentUser.Role.Rights.HasFlag(AccessRights.Vacations))
-            {
-                return BadRequest("ERROR: Teil Puuduvad õigused puhkuste üle");
-            }
             return Ok(VacationRepository
                 .Where(x => x.Status == VacationStatus.Approved && x.EndDate > DateTime.Now)
                 .AsDto());
@@ -139,20 +109,16 @@ namespace BSSiseveeb.Public.Web.Controllers.API
 
         
         [HttpPost]
+        [AuthorizeApi(AccessRights.Vacations)]
         public IHttpActionResult ModifyVacation(VacationModel model)
         {
-            if (!CurrentUser.Role.Rights.HasFlag(AccessRights.Vacations))
-            {
-                return BadRequest("ERROR: Teil Puuduvad õigused puhkuste üle");
-            }
-
             if (model.End < model.Start)
             {
                 return BadRequest();
             }
 
             var vacation = VacationRepository.First(x => x.Id == model.Id);
-            var employee = EmployeeRepository.First(x => x.Id == vacation.Employee.Id);
+            var employee = vacation.Employee;
             var tempDays = vacation.Days;
 
             vacation.StartDate = model.Start;
@@ -165,7 +131,7 @@ namespace BSSiseveeb.Public.Web.Controllers.API
                 return BadRequest();
             }
 
-            employee.VacationDays -= tempDays;
+            employee.VacationDays += tempDays;
 
             EmployeeRepository.SaveOrUpdate(employee);
             EmployeeRepository.Commit();
@@ -173,23 +139,18 @@ namespace BSSiseveeb.Public.Web.Controllers.API
             VacationRepository.SaveOrUpdate(vacation);
             VacationRepository.Commit();
 
+
             var emails = EmployeeRepository.Where(x => x.VacationMessages == true && x.Id == vacation.EmployeeId).Select(x => x.Email).ToList();
-            var subject = "Vacation modified";
-            var body = "<p>Your vacation has been modified</p>";
-            EmailHelper.SendEmail(emails, subject, body);
+            EmailHelper.VacationModified(vacation, emails);
 
             return Ok();
         }
 
         
         [HttpPost]
+        [AuthorizeApi(AccessRights.Vacations)]
         public IHttpActionResult DeleteVacation(GeneralIdModel model)
         {
-            if (!CurrentUser.Role.Rights.HasFlag(AccessRights.Vacations))
-            {
-                return BadRequest("ERROR: Teil Puuduvad õigused puhkuste üle");
-            }
-
             var vacation = VacationRepository.First(x => x.Id == model.Id);
             var employee = EmployeeRepository.First(x => x.Id == vacation.Employee.Id);
 
@@ -200,9 +161,7 @@ namespace BSSiseveeb.Public.Web.Controllers.API
             VacationRepository.SaveOrUpdate(vacation);
 
             var emails = EmployeeRepository.Where(x => x.VacationMessages == true && x.Id == vacation.EmployeeId).Select(x => x.Email).ToList();
-            var subject = "Vacation denied";
-            var body = "<p>Your vacation has been denied</p>";
-            EmailHelper.SendEmail(emails, subject, body);
+            EmailHelper.VacationDenied(vacation, emails);
 
             ContextManager.Commit();
             return Ok();

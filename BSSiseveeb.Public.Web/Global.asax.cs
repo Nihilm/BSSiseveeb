@@ -7,6 +7,7 @@ using BSSiseveeb.Core;
 using BSSiseveeb.Public.Web.Windsor;
 using Castle.Windsor;
 using Castle.Windsor.Installer;
+using BSSiseveeb.Public.Web.ScheduledTasks;
 
 namespace BSSiseveeb.Public.Web
 {
@@ -14,7 +15,6 @@ namespace BSSiseveeb.Public.Web
     {
         protected void Application_Start()
         {
-
             var container = new WindsorContainer()
                 .Install(FromAssembly.This());
 
@@ -31,6 +31,8 @@ namespace BSSiseveeb.Public.Web
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+            Scheduler.Start();
         }
     }
 }

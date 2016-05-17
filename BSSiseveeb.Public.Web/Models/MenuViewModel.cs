@@ -2,8 +2,8 @@
 
 namespace BSSiseveeb.Public.Web.Models
 {
-    public class BaseViewModel
+    public class MenuViewModel
     {
-        public RoleDto CurrentUserRole { get; set; }
+        public RoleDto UserRole { get; set; }
     }
 }

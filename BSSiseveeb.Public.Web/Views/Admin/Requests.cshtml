@@ -40,7 +40,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.Status, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownListFor(model => model.Status, new SelectList(new List<string> {"Pending", "Confirmed", "Declined"}), new { @class = "form-control"})
+                @Html.DropDownListFor(model => model.Status, new SelectList(new List<string> {"Pending", "Confirmed", "Declined", "Cancelled"}), new { @class = "form-control"})
                 @Html.ValidationMessageFor(model => model.Status, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -49,7 +49,5 @@
 }
 
 @section scripts {
-    @Scripts.Render("~/Scripts/general.js")
-    @Scripts.Render("~/Scripts/bootstrap-datepicker.js")
-    @Scripts.Render("~/Scripts/adminRequests.js")
+    @Scripts.Render(ScriptBundles.AdminRequests)
 }

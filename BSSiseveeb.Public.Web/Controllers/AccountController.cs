@@ -6,14 +6,22 @@ using BSSiseveeb.Public.Web.Models;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OpenIdConnect;
-
+using BSSiseveeb.Public.Web.Attributes;
+using System.Security.Claims;
+using BSSiseveeb.Core;
+using System;
+using Microsoft.Azure.ActiveDirectory.GraphClient;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using BSSiseveeb.Core.Mappers;
 
 namespace BSSiseveeb.Public.Web.Controllers
 {
     [Authorize]
-    public class AccountController : BaseController
+    public partial class AccountController : BaseController
     {
-        public ActionResult Index()
+        [AuthorizeLevel(AccessRights.Standard)]
+        public virtual ActionResult Index()
         {
             var employee = EmployeeRepository.Single(x => x.Id == CurrentUser.Id);
             var model = new ChangeAccountSettingsViewModel()
@@ -22,22 +30,17 @@ namespace BSSiseveeb.Public.Web.Controllers
                 DailyBirthdayMessages = employee.DailyBirthdayMessages,
                 MonthlyBirthdayMessages = employee.MonthlyBirthdayMessages,
                 RequestMessages = employee.RequestMessages,
-                VacationMessages = employee.VacationMessages,
-                CurrentUserRole = CurrentUserRole
+                VacationMessages = employee.VacationMessages
             };
 
             return View(model);
         }
 
         [HttpPost]
+        [AuthorizeLevel(AccessRights.Standard)]
         [ValidateAntiForgeryToken]
-        public ActionResult UpdateAccount(ChangeAccountSettingsViewModel model)
+        public virtual ActionResult UpdateAccount(ChangeAccountSettingsViewModel model)
         {
-            if (!CurrentUser.Role.Rights.HasFlag(AccessRights.Standard))
-            {
-                return View("Error", new BaseViewModel() { CurrentUserRole = CurrentUserRole });
-            }
-
             var employee = EmployeeRepository.First(x => x.Id == CurrentUser.Id);
             employee.PhoneNumber = model.Phone;
             employee.MonthlyBirthdayMessages = model.MonthlyBirthdayMessages;
@@ -45,15 +48,78 @@ namespace BSSiseveeb.Public.Web.Controllers
             employee.RequestMessages = model.RequestMessages;
             employee.VacationMessages = model.VacationMessages;
 
+            if (model.BirthDay != null)
+            {
+                employee.Birthdate = model.BirthDay;
+            }
+
+            employee.IsInitialized = true;
+
 
             EmployeeRepository.SaveOrUpdate(employee);
             EmployeeRepository.Commit();
 
 
             model.Message = "Teie andmed on salvestatud";
-            model.CurrentUserRole = CurrentUserRole;
-            return View("Index", model);
+            return View(MVC.Account.Views.Index, model);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public virtual async Task<ActionResult> InitializeAccount(ChangeAccountSettingsViewModel model)
+        {
+            string tenantID = ClaimsPrincipal.Current.FindFirst(AppClaims.TenantId).Value;
+
+            Uri servicePointUri = new Uri(graphResourceID);
+            Uri serviceRoot = new Uri(servicePointUri, tenantID);
+            ActiveDirectoryClient activeDirectoryClient = new ActiveDirectoryClient(serviceRoot,
+                  async () => await GetTokenForApplication());
+
+            var result = await activeDirectoryClient.Users.ExecuteAsync();
+            IUser user = result.CurrentPage.Single(x => x.ObjectId == CurrentUserId);
+            var defaultRole = RoleRepository.Single(x => x.Name == "User");
+
+            var employee = new Employee()
+            {
+                Id = user.ObjectId,
+                Name = user.DisplayName,
+                Email = user.Mail,
+                Role = defaultRole,
+                PhoneNumber = model.Phone,
+                IsInitialized = true,
+                VacationDays = 28,
+                VacationMessages = model.VacationMessages,
+                RequestMessages = model.RequestMessages,
+                MonthlyBirthdayMessages = model.MonthlyBirthdayMessages,
+                DailyBirthdayMessages = model.DailyBirthdayMessages,
+                Birthdate = model.BirthDay,
+            };
+
+            EmployeeRepository.Add(employee);
+            EmployeeRepository.Commit();
+
+            var employees = EmployeeRepository
+                                    .Where(x => x.Birthdate.HasValue)
+                                    .Where(x => x.Birthdate.Value.Month == DateTime.Now.Month && x.Birthdate.Value.Day == DateTime.Now.Day)
+                                    .AsDto();
+
+            var vacations = new List<string>();
+            var repoVacations = VacationRepository
+                                    .Where(x => x.StartDate.Month == DateTime.Now.Month || x.EndDate.Month == DateTime.Now.Month)
+                                    .Where(x => x.Status == VacationStatus.Approved)
+                                    .OrderBy(x => x.StartDate)
+                                    .AsDto();
+
+            foreach (var vacation in repoVacations)
+            {
+                var worker = EmployeeRepository.Single(x => x.Id == vacation.EmployeeId).AsDto().Name;
+                vacations.Add(worker + " " + vacation.StartDate.ToString("d") + " - " + vacation.EndDate.ToString("d"));
+            }
+
+
+            return View(MVC.Home.Views.Index, new IndexViewModel() { Employees = employees.ToList(), Vacations = vacations });
+        }
+
 
         private IAuthenticationManager AuthenticationManager
         {
@@ -64,19 +130,8 @@ namespace BSSiseveeb.Public.Web.Controllers
         }
 
         [AllowAnonymous]
-        private ActionResult RedirectToLocal(string returnUrl)
-        {
-            if (Url.IsLocalUrl(returnUrl))
-            {
-                return Redirect(returnUrl);
-            }
-            return RedirectToAction("Index", "Home");
-        }
-
-        [AllowAnonymous]
         public void SignIn()
         {
-            //Send an OpenID Connect sign -in request.
             if (!Request.IsAuthenticated)
             {
                 HttpContext.GetOwinContext().Authentication.Challenge(new AuthenticationProperties { RedirectUri = "/" },
@@ -93,15 +148,14 @@ namespace BSSiseveeb.Public.Web.Controllers
                 OpenIdConnectAuthenticationDefaults.AuthenticationType, CookieAuthenticationDefaults.AuthenticationType);
         }
 
-        public ActionResult SignOutCallback()
+        public virtual ActionResult SignOutCallback()
         {
             if (Request.IsAuthenticated)
             {
-                //Redirect to home page if the user is authenticated.
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction(MVC.Home.Views.Index);
             }
 
-            return View(new BaseViewModel() { CurrentUserRole = CurrentUserRole });
+            return View();
         }
     }
 }

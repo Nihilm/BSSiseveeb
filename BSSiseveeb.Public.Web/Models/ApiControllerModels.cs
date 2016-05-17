@@ -3,7 +3,7 @@
 
 namespace BSSiseveeb.Public.Web.Models
 {
-    public class VacationModel : BaseViewModel
+    public class VacationModel
     {
         public int Id { get; set; }
         public DateTime Start { get; set; }
@@ -11,18 +11,18 @@ namespace BSSiseveeb.Public.Web.Models
         public string Comment { get; set; }
     }
 
-    public class GeneralIdModel : BaseViewModel
+    public class GeneralIdModel
     {
         public int Id { get; set; }
     }
 
-    public class RequestModel : BaseViewModel
+    public class RequestModel
     {
         public string Title { get; set; }
         public string Info { get; set; }
     }
 
-    public class GeneratePdfModel : BaseViewModel
+    public class GeneratePdfModel
     {
         public DateTime Start { get; set; }
         public DateTime End { get; set; }

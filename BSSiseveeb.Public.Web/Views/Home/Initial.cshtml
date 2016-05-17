@@ -1,0 +1,65 @@
+﻿@using BSSiseveeb.Public.Web.Models
+@model ChangeAccountSettingsViewModel
+
+@{
+    ViewBag.Title = "Initial";
+}
+
+<h2>Initial</h2>
+
+@using (Html.BeginForm("InitializeAccount", "Account"))
+{
+    @Html.AntiForgeryToken()
+    <p class="text-success">@Model.Message</p>
+    <div>
+        <h4>Initsialiseeri kasutaja</h4>
+        <hr />
+        <div class="form-group">
+            @Html.LabelFor(Model => Model.BirthDay, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div id="Birthday" class="col-md-10" name="Birthday"></div>
+            @Html.ValidationMessageFor(Model => Model.BirthDay, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(Model => Model.Phone, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(Model => Model.Phone, new { htmlAttributes = new { @class = "form-control", @value = @Model.Phone } })
+                @Html.ValidationMessageFor(Model => Model.Phone, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-12">
+                @Html.CheckBoxFor(Model => Model.DailyBirthdayMessages, new { htmlAttributes = new { @class = "checkbox", @value = @Model.DailyBirthdayMessages } })
+                @Html.LabelFor(Model => Model.DailyBirthdayMessages, htmlAttributes: new { @class = "control-label" })
+                @Html.ValidationMessageFor(Model => Model.DailyBirthdayMessages, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-12">
+                @Html.CheckBoxFor(Model => Model.MonthlyBirthdayMessages, new { htmlAttributes = new { @class = "checkbox", @value = @Model.MonthlyBirthdayMessages } })
+                @Html.LabelFor(Model => Model.MonthlyBirthdayMessages, htmlAttributes: new { @class = "control-label" })
+                @Html.ValidationMessageFor(Model => Model.MonthlyBirthdayMessages, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-12">
+                @Html.CheckBoxFor(Model => Model.RequestMessages, new { htmlAttributes = new { @class = "checkbox", @value = @Model.RequestMessages } })
+                @Html.LabelFor(Model => Model.RequestMessages, htmlAttributes: new { @class = "control-label" })
+                @Html.ValidationMessageFor(Model => Model.RequestMessages, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-12">
+                @Html.CheckBoxFor(Model => Model.VacationMessages, new { htmlAttributes = new { @class = "checkbox", @value = @Model.VacationMessages } })
+                @Html.LabelFor(Model => Model.VacationMessages, htmlAttributes: new { @class = "control-label" })
+                @Html.ValidationMessageFor(Model => Model.VacationMessages, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <input type="submit" class="btn btn-submit" value="Salvesta">
+    </div>
+}
+
+
+@section scripts {
+    @Scripts.Render(ScriptBundles.Account)
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -17,13 +17,6 @@ namespace BSSiseveeb.Public.Web.Controllers.API
         public IRequestRepository RequestRepository { get; set; }
         public IRoleRepository RoleRepository { get; set; }
 
-        [Authorize]
-        [HttpGet]
-        public IEnumerable<EmployeeDto> GetEmployees()
-        {
-            return EmployeeRepository.AsDto();
-        }
-
         public string CurrentUserId
         {
             get
@@ -39,6 +32,11 @@ namespace BSSiseveeb.Public.Web.Controllers.API
             {
                 return EmployeeRepository.FirstOrDefault(x => x.Id == CurrentUserId);
             }
+        }
+
+        protected IEnumerable<EmployeeDto> GetEmployees()
+        {
+            return EmployeeRepository.AsDto();
         }
     }
 }

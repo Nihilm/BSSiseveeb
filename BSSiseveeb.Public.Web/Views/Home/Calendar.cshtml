@@ -10,11 +10,9 @@
 </div>
 <table id="calendar" class="table table-bordered">
     <thead>
-    <tr id="mainRow">
-    </tr>
+        <tr id="mainRow"></tr>
     </thead>
-    <tbody id="calendarBody">
-    </tbody>
+    <tbody id="calendarBody"></tbody>
 </table>
 
 <div id="sisestaPuhkus">
@@ -40,12 +38,12 @@
         <h3>My Vacations:</h3>
         <table class="table table-bordered">
             <thead>
-            <tr>
-                <th>StartDate</th>
-                <th>EndDate</th>
-                <th>CurrentStatus</th>
-                <th>Tühista</th>
-            </tr>
+                <tr>
+                    <th>StartDate</th>
+                    <th>EndDate</th>
+                    <th>CurrentStatus</th>
+                    <th>Tühista</th>
+                </tr>
             </thead>
             <tbody id="myVacationsBody"></tbody>
         </table>
@@ -54,7 +52,5 @@
 
 
 @section scripts {
-    @Scripts.Render("~/Scripts/general.js")
-    @Scripts.Render("~/Scripts/calendar.js")
-    @Scripts.Render("~/Scripts/bootstrap-datepicker.js")
+    @Scripts.Render(ScriptBundles.Calendar)
 }

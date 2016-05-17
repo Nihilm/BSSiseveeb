@@ -1,0 +1,14 @@
+[
+  {
+    "outputFileName": "Scripts/bootstrap-datepicker.js",
+    "inputFiles": [
+      "Scripts/bootstrap-datepicker.js"
+    ]
+  },
+  {
+    "outputFileName": "Scripts/adminvacations.js",
+    "inputFiles": [
+      "Scripts/adminvacations.js"
+    ]
+  }
+]

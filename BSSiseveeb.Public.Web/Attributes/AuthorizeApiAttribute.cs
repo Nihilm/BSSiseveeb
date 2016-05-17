@@ -6,34 +6,35 @@ using System.Security.Claims;
 using BSSiseveeb.Core;
 using System.Linq;
 using System;
-using BSSiseveeb.Data.Repositories;
 
 namespace BSSiseveeb.Public.Web.Attributes
 {
     public class AuthorizeApiAttribute : AuthorizeAttribute
     {
-      /*  
         public AccessRights Rights { get; set; }
-        public AccessRights Check { get; set; }
 
-        public AuthorizeApiAttribute(AccessRights rights, AccessRights check)
+        public AuthorizeApiAttribute(AccessRights rights)
         {
             this.Rights = rights;
-            this.Check = check;
         }
 
         protected override bool IsAuthorized(HttpActionContext actionContext)
         {
-            var repository = new EmployeeRepository();
+            var repo = IoC.Resolve<IEmployeeRepository>();
 
             var identity = (ClaimsIdentity)ClaimsPrincipal.Current.Identity;
             var id = identity.FindFirst(AppClaims.ObjectIdentifier).Value;
-            var employee = repository.FirstOrDefault(x => x.Id == id);
+            var employee = repo.FirstOrDefault(x => x.Id == id);
 
             try
             {
+                if (employee == null)
+                {
+                    return false;
+                }
+
                 if (identity.IsAuthenticated &&
-                    Rights.HasFlag(Check))
+                    employee.Role.Rights.HasFlag(Rights))
                 {
                     return true;
                 }
@@ -44,6 +45,6 @@ namespace BSSiseveeb.Public.Web.Attributes
             {
                 return false;
             }
-        }*/
+        }
     }
 }

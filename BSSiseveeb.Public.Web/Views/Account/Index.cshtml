@@ -15,6 +15,11 @@
         <h4>Muuda kasutaja sätteid</h4>
         <hr/>
         <div class="form-group">
+            @Html.LabelFor(model => model.BirthDay, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div id="Birthday" class="col-md-10" name="Birthday"></div>
+            @Html.ValidationMessageFor(model => model.BirthDay, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
             @Html.LabelFor(model => model.Phone, htmlAttributes: new {@class = "control-label col-md-2"})
             <div class="col-md-10">
                 @Html.EditorFor(model => model.Phone, new {htmlAttributes = new {@class = "form-control", @value = @Model.Phone}})
@@ -55,6 +60,5 @@
 
 
 @section scripts {
-    @Scripts.Render("~/Scripts/general.js")
-    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render(ScriptBundles.Account)
 }

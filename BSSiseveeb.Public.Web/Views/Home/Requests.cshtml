@@ -13,8 +13,22 @@
     <h4 id="status"></h4>
 </div>
 
+<div id="myRequests">
+    <h3>My Requests:</h3>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Request</th>
+                <th>Info</th>
+                <th>Timestamp</th>
+                <th>Status</th>
+                <th>Cancel</th>
+            </tr>
+        </thead>
+        <tbody id="myRequestsBody"></tbody>
+    </table>
+</div>
 
 @section scripts {
-    @Scripts.Render("~/Scripts/general.js")
-    @Scripts.Render("~/Scripts/requests.js")
+    @Scripts.Render(ScriptBundles.Requests)
 }

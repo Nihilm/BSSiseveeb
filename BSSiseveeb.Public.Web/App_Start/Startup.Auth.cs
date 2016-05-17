@@ -22,6 +22,7 @@ namespace BSSiseveeb.Public.Web
         private static string aadInstance = ConfigurationManager.AppSettings["ida:AADInstance"];
         private static string tenantId = ConfigurationManager.AppSettings["ida:TenantId"];
         private static string postLogoutRedirectUri = ConfigurationManager.AppSettings["ida:PostLogoutRedirectUri"];
+        private static string redirectUri = ConfigurationManager.AppSettings["ida:RedirectUri"];
 
         public static readonly string Authority = aadInstance + tenantId;
 
@@ -42,7 +43,7 @@ namespace BSSiseveeb.Public.Web
                     ClientId = clientId,
                     Authority = Authority,
                     PostLogoutRedirectUri = postLogoutRedirectUri,
-
+                    RedirectUri = redirectUri,
                     Notifications = new OpenIdConnectAuthenticationNotifications()
                     {
                         // If there is a code in the OpenID Connect response, redeem it for an access token and refresh token, and store those away.

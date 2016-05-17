@@ -10,6 +10,7 @@ namespace BSSiseveeb.Core.Domain
         public RequestStatus Status { get; set; }
         public string EmployeeId { get; set; }
         public DateTime TimeStamp { get; set; }
+        public bool Cleared { get; set; }
 
         public virtual Employee Employee { get; set; }
     }
@@ -18,6 +19,7 @@ namespace BSSiseveeb.Core.Domain
     {
         Confirmed,
         Declined,
-        Pending
+        Pending,
+        Cancelled
     }
 }

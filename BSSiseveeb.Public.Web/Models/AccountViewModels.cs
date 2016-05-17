@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BSSiseveeb.Public.Web.Models
 {
-    public class RegistrationModel : BaseViewModel
+    public class RegistrationModel
     {
         public string Id { get; set; }
         public string Name { get; set; }
@@ -15,7 +15,7 @@ namespace BSSiseveeb.Public.Web.Models
         [Required]
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
-        
+
         [DataType(DataType.Date)]
         public DateTime? Start { get; set; }
 
@@ -30,15 +30,20 @@ namespace BSSiseveeb.Public.Web.Models
 
         public string OldRole { get; set; }
 
-        [Display(Name= "Role")]
+        [Display(Name = "Role")]
         public string NewRole { get; set; }
 
-        public List<string> Roles { get; set; } 
+        public List<string> Roles { get; set; }
     }
 
-    public class ChangeAccountSettingsViewModel : BaseViewModel
+    public class ChangeAccountSettingsViewModel
     {
+        [DataType(DataType.Date)]
+        [Display(Name = "Birthday: ")]
+        public DateTime? BirthDay { get; set; }
+
         [DataType(DataType.PhoneNumber)]
+        [Display(Name = "Phone: ")]
         public string Phone { get; set; }
 
         [Display(Name = "Messages about vacations")]
@@ -55,5 +60,4 @@ namespace BSSiseveeb.Public.Web.Models
 
         public string Message { get; set; }
     }
-
 }

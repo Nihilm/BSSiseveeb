@@ -11,5 +11,6 @@ namespace BSSiseveeb.Core.Dto
         public RequestStatus Status { get; set; }
         public string EmployeeId { get; set; }
         public DateTime TimeStamp { get; set; }
+        public bool Cleared { get; set; }
     }
 }

@@ -14,13 +14,14 @@ using BSSiseveeb.Core.Dto;
 
 namespace BSSiseveeb.Public.Web.Controllers
 {
-    public abstract class BaseController : Controller
+    public abstract partial class BaseController : Controller
     {
         public IEmployeeRepository EmployeeRepository { get; set; }
         public IVacationRepository VacationRepository { get; set; }
         public IRequestRepository RequestRepository { get; set; }
         public IRoleRepository RoleRepository { get; set; }
         public IBSContextContextManager ContextManager { get; set; }
+
         public string clientId = ConfigurationManager.AppSettings["ida:ClientId"];
         public string appKey = ConfigurationManager.AppSettings["ida:ClientSecret"];
         public string aadInstance = ConfigurationManager.AppSettings["ida:AADInstance"];
@@ -30,12 +31,12 @@ namespace BSSiseveeb.Public.Web.Controllers
         {
             get
             {
-                var identity = (ClaimsIdentity)ClaimsPrincipal.Current.Identity;
-                if(identity.IsAuthenticated == false)
+                if (!User.Identity.IsAuthenticated)
                 {
-                     return "Guest";
+                    return null;
                 }
 
+                var identity = (ClaimsIdentity)ClaimsPrincipal.Current.Identity;
                 return identity.FindFirst(AppClaims.ObjectIdentifier).Value;
             }
         }
@@ -44,14 +45,19 @@ namespace BSSiseveeb.Public.Web.Controllers
         {
             get
             {
-                var userId = CurrentUserId;
-                if(userId == "Guest")
+                var user = EmployeeRepository.FirstOrDefault(x => x.Id == CurrentUserId);
+                if (user == null)
                 {
-                    return new Employee() { Role = new Role() { Rights = AccessRights.None } };
+                    user = new Employee()
+                    {
+                        Role = new Role() { Rights = AccessRights.None }
+                    };
                 }
-                return EmployeeRepository.FirstOrDefault(x => x.Id == userId);
+
+                return user;
             }
         }
+
         public RoleDto CurrentUserRole
         {
             get
@@ -59,7 +65,6 @@ namespace BSSiseveeb.Public.Web.Controllers
                 return CurrentUser.Role.AsDto();
             }
         }
-
 
         public async Task<string> GetTokenForApplication()
         {
