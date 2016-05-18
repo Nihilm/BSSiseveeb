@@ -1,9 +1,9 @@
-﻿using System;
+﻿using BSSiseveeb.Core.Domain;
+using BSSiseveeb.Core.Dto;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using BSSiseveeb.Core.Domain;
-using BSSiseveeb.Core.Dto;
 
 namespace BSSiseveeb.Core.Mappers
 {

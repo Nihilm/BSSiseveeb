@@ -12,7 +12,7 @@ var employees;
 
 $(document).ready(function () {
 
-    $.get('/API/Calendar/GetEmployees').done(function (data) {
+    $.get(app.root + 'API/Calendar/GetEmployees').done(function (data) {
         employees = data;
         drawCalendar();
         getCalendar();
@@ -79,7 +79,7 @@ function updateHeader() {
 function getCalendar() {
     var monthC = date.getMonth() + 1;
 
-    $.get('/API/Calendar/GetVacations', { date: date.toISOString() })
+    $.get(app.root + 'API/Calendar/GetVacations', { date: date.toISOString() })
         .done(function (data) {
             $.each(data, function (key, item) {
                 var startDate = new Date(item.StartDate);
@@ -122,7 +122,7 @@ function sendVacationDate() {
     var end = new Date($("#dp2").data().date);
     var comment = $comment.val();
     console.log(comment);
-    $.post('/API/Calendar/SetVacation', { Comment: comment, Start: start.toISOString(), End: end.toISOString() })
+    $.post(app.root + 'API/Calendar/SetVacation', { Comment: comment, Start: start.toISOString(), End: end.toISOString() })
         .success(function () {
             $("#status").empty().append("Teie request on edastatud");
             $("#algus").val('');
@@ -141,9 +141,9 @@ function drawMyVacations() {
     $myVacations.empty();
     getVacationDays();
 
-    $.get('/API/Calendar/GetMyVacation')
-        .done(function(data) {
-            $.each(data, function(key, item) {
+    $.get(app.root + 'API/Calendar/GetMyVacation')
+        .done(function (data) {
+            $.each(data, function (key, item) {
                 var start = dateFormat(new Date(item.StartDate));
                 var end = dateFormat(new Date(item.EndDate));
                 var status;
@@ -172,15 +172,15 @@ function drawMyVacations() {
 }
 
 function cancelVacation(id) {
-    $.post('/API/Calendar/CancelVacation', { Id: id })
-        .success(function() {
+    $.post(app.root + 'API/Calendar/CancelVacation', { Id: id })
+        .success(function () {
             drawMyVacations();
         });
 }
 
 function getVacationDays() {
-    $.get('/API/Calendar/GetVacationDays')
-        .done(function(data) {
+    $.get(app.root + 'API/Calendar/GetVacationDays')
+        .done(function (data) {
             $remainingDays.empty().append("Alles jäänud puhkepäevad: " + data);
         });
 }

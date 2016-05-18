@@ -1,7 +1,8 @@
-﻿using System.Data.Entity;
-using BSSiseveeb.Core.Domain;
+﻿using BSSiseveeb.Core.Domain;
+using BSSiseveeb.Data.Migrations;
 using Sparkling.Data;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity;
 
 namespace BSSiseveeb.Data
 {
@@ -23,7 +24,7 @@ namespace BSSiseveeb.Data
 
         public BSContext() : base("DefaultConnection")
         {
-            Database.SetInitializer(new DbInitializer());
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<BSContext, Configuration>());
         }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
@@ -31,6 +32,16 @@ namespace BSSiseveeb.Data
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Employee>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
+            modelBuilder.Entity<Employee>().Property(x => x.Email).HasMaxLength(128);
+            modelBuilder.Entity<Employee>().Property(x => x.Name).HasMaxLength(128);
+            modelBuilder.Entity<Employee>().Property(x => x.PhoneNumber).HasMaxLength(32);
+            modelBuilder.Entity<Employee>().Property(x => x.Skype).HasMaxLength(64);
+            modelBuilder.Entity<Request>().Property(x => x.Req).HasMaxLength(128);
+            modelBuilder.Entity<Request>().Property(x => x.Description).HasMaxLength(512);
+            modelBuilder.Entity<Role>().Property(x => x.Name).HasMaxLength(32);
+            modelBuilder.Entity<Vacation>().Property(x => x.Comments).HasMaxLength(512);
+
+            
         }
     }
 }

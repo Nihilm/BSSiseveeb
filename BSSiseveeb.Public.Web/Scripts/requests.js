@@ -11,7 +11,7 @@ $(document).ready(function () {
 function sendRequest() {
     var title = $title.val();
     var info = $info.val();
-    $.post('/API/Requests/SetRequest', { Title: title, Info: info })
+    $.post(app.root + 'API/Requests/SetRequest', { Title: title, Info: info })
         .success(function() {
             $status.empty();
             $status.append("Request on vastuvõetud");
@@ -27,7 +27,7 @@ function sendRequest() {
 function drawMyRequests() {
     $myRequests.empty();
 
-    $.get('/API/Requests/GetMyRequest')
+    $.get(app.root + 'API/Requests/GetMyRequest')
         .done(function (data) {
             $.each(data, function (key, item) {
                 var timestamp = dateFormat(new Date(item.TimeStamp));
@@ -58,7 +58,7 @@ function drawMyRequests() {
 }
 
 function cancelRequest(id) {
-    $.post('/API/Requests/RemoveVacation', { Id: id })
+    $.post(app.root + 'API/Requests/RemoveVacation', { Id: id })
         .success(function () {
             drawMyRequests();
         });

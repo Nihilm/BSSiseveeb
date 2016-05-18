@@ -76,12 +76,14 @@ namespace BSSiseveeb.Public.Web.Controllers
         public class ActionNamesClass
         {
             public readonly string UnAuthorized = "UnAuthorized";
+            public readonly string ServerError = "ServerError";
         }
 
         [GeneratedCode("T4MVC", "2.0"), DebuggerNonUserCode]
         public class ActionNameConstants
         {
             public const string UnAuthorized = "UnAuthorized";
+            public const string ServerError = "ServerError";
         }
 
 
@@ -95,8 +97,10 @@ namespace BSSiseveeb.Public.Web.Controllers
             public _ViewNamesClass ViewNames { get { return s_ViewNames; } }
             public class _ViewNamesClass
             {
+                public readonly string ServerError = "ServerError";
                 public readonly string UnAuthorized = "UnAuthorized";
             }
+            public readonly string ServerError = "~/Views/Error/ServerError.cshtml";
             public readonly string UnAuthorized = "~/Views/Error/UnAuthorized.cshtml";
         }
     }
@@ -114,6 +118,17 @@ namespace BSSiseveeb.Public.Web.Controllers
         {
             var callInfo = new T4MVC_System_Web_Mvc_ActionResult(Area, Name, ActionNames.UnAuthorized);
             UnAuthorizedOverride(callInfo);
+            return callInfo;
+        }
+
+        [NonAction]
+        partial void ServerErrorOverride(T4MVC_System_Web_Mvc_ActionResult callInfo);
+
+        [NonAction]
+        public override System.Web.Mvc.ActionResult ServerError()
+        {
+            var callInfo = new T4MVC_System_Web_Mvc_ActionResult(Area, Name, ActionNames.ServerError);
+            ServerErrorOverride(callInfo);
             return callInfo;
         }
 

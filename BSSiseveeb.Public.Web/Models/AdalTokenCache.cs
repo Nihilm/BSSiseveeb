@@ -1,10 +1,10 @@
-﻿using System;
+﻿using BSSiseveeb.Core.Domain;
+using BSSiseveeb.Data;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using System;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Security;
-using BSSiseveeb.Core.Domain;
-using BSSiseveeb.Data;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
 namespace BSSiseveeb.Public.Web.Models
 {

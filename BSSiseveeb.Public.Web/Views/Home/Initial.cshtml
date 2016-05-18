@@ -27,6 +27,20 @@
             </div>
         </div>
         <div class="form-group">
+            @Html.LabelFor(Model => Model.Skype, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(Model => Model.Skype, new { htmlAttributes = new { @class = "form-control", @value = @Model.Skype } })
+                @Html.ValidationMessageFor(Model => Model.Skype, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(Model => Model.SocialSecurityID, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(Model => Model.SocialSecurityID, new { htmlAttributes = new { @class = "form-control", @value = @Model.SocialSecurityID } })
+                @Html.ValidationMessageFor(Model => Model.SocialSecurityID, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
             <div class="col-md-12">
                 @Html.CheckBoxFor(Model => Model.DailyBirthdayMessages, new { htmlAttributes = new { @class = "checkbox", @value = @Model.DailyBirthdayMessages } })
                 @Html.LabelFor(Model => Model.DailyBirthdayMessages, htmlAttributes: new { @class = "control-label" })

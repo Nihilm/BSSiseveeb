@@ -1,12 +1,11 @@
-﻿using System.Web;
-using System.Web.Mvc;
-using System.Linq;
+﻿using BSSiseveeb.Core;
+using BSSiseveeb.Core.Contracts.Repositories;
 using BSSiseveeb.Core.Domain;
 using System;
+using System.Linq;
 using System.Security.Claims;
-using BSSiseveeb.Core;
-using BSSiseveeb.Core.Contracts.Repositories;
-using System.Net;
+using System.Web;
+using System.Web.Mvc;
 using System.Web.Routing;
 
 namespace BSSiseveeb.Public.Web.Attributes

@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Net.Mail;
+﻿using BSSiseveeb.Core.Domain;
 using Castle.Core.Internal;
-using BSSiseveeb.Core.Domain;
+using System.Collections.Generic;
+using System.Net.Mail;
 
 namespace BSSiseveeb.Public.Web.Controllers.API.Helpers
 {

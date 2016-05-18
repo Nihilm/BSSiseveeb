@@ -11,6 +11,9 @@
     {
         <td></td>
     }
+    
+    <td>@Model.Skype</td>
+    <td>@Model.SocialSecurityID</td>
     <td>@Model.PhoneNumber</td>
     <td>@Model.Email</td>
 
@@ -40,6 +43,8 @@
     {
         <td></td>
     }
+
+    
 
     <td>@Html.ActionLink("Edit", "ViewEmployee", "Admin", new { id = Model.Id }, new { @class = "btn btn-primary" })</td>
 </tr>

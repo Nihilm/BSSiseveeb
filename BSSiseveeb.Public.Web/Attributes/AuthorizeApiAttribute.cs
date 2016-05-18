@@ -1,11 +1,11 @@
-﻿using System.Web.Http;
-using System.Web.Http.Controllers;
-using BSSiseveeb.Core.Domain;
+﻿using BSSiseveeb.Core;
 using BSSiseveeb.Core.Contracts.Repositories;
-using System.Security.Claims;
-using BSSiseveeb.Core;
-using System.Linq;
+using BSSiseveeb.Core.Domain;
 using System;
+using System.Linq;
+using System.Security.Claims;
+using System.Web.Http;
+using System.Web.Http.Controllers;
 
 namespace BSSiseveeb.Public.Web.Attributes
 {

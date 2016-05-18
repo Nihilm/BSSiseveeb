@@ -38,8 +38,8 @@
       <HintPath>..\packages\EntityFramework.BulkInsert-ef6.6.0.2.8\lib\Net45\EntityFramework.BulkInsert.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="EntityFramework.MappingAPI, Version=6.0.0.7, Culture=neutral, PublicKeyToken=7ee2e825d201459e, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.MappingAPI.6.0.0.7\lib\net45\EntityFramework.MappingAPI.dll</HintPath>
+    <Reference Include="EntityFramework.MappingAPI, Version=6.1.0.9, Culture=neutral, PublicKeyToken=7ee2e825d201459e, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.MappingAPI.6.1.0.9\lib\net45\EntityFramework.MappingAPI.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
@@ -66,7 +66,23 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BSContext.cs" />
-    <Compile Include="DbInitializer.cs" />
+    <Compile Include="Migrations\201605171246231_InitialCreate.cs" />
+    <Compile Include="Migrations\201605171246231_InitialCreate.Designer.cs">
+      <DependentUpon>201605171246231_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201605180750228_EmployeeUpdate.cs" />
+    <Compile Include="Migrations\201605180750228_EmployeeUpdate.Designer.cs">
+      <DependentUpon>201605180750228_EmployeeUpdate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201605181031186_AddStringLImits.cs" />
+    <Compile Include="Migrations\201605181031186_AddStringLImits.Designer.cs">
+      <DependentUpon>201605181031186_AddStringLImits.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201605181113572_SkypeSocialSecurity.cs" />
+    <Compile Include="Migrations\201605181113572_SkypeSocialSecurity.Designer.cs">
+      <DependentUpon>201605181113572_SkypeSocialSecurity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\Base\RepositoryWithStringId.cs" />
     <Compile Include="Repositories\EmployeeRepository.cs" />
@@ -86,6 +102,20 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201605171246231_InitialCreate.resx">
+      <DependentUpon>201605171246231_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201605180750228_EmployeeUpdate.resx">
+      <DependentUpon>201605180750228_EmployeeUpdate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201605181031186_AddStringLImits.resx">
+      <DependentUpon>201605181031186_AddStringLImits.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201605181113572_SkypeSocialSecurity.resx">
+      <DependentUpon>201605181113572_SkypeSocialSecurity.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

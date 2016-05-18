@@ -1,5 +1,4 @@
-﻿using BSSiseveeb.Core;
-using BSSiseveeb.Core.Domain;
+﻿using BSSiseveeb.Core.Domain;
 using BSSiseveeb.Core.Mappers;
 using BSSiseveeb.Public.Web.Attributes;
 using BSSiseveeb.Public.Web.Controllers.Helpers;
@@ -8,7 +7,6 @@ using Microsoft.Azure.ActiveDirectory.GraphClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
@@ -49,9 +47,11 @@ namespace BSSiseveeb.Public.Web.Controllers
                 End = employee.ContractEnd,
                 VacationDays = employee.VacationDays,
                 Phone = employee.PhoneNumber,
+                Skype = employee.Skype,
+                SocialSecurityID = employee.SocialSecurityID,
                 OldRole = role.Name,
                 NewRole = role.Name,
-                Roles = roles
+                Roles = roles,
             };
 
             return View(MVC.Admin.Views.EditEmployee, model);
@@ -69,6 +69,8 @@ namespace BSSiseveeb.Public.Web.Controllers
             employee.ContractEnd = model.End;
             employee.ContractStart = model.Start;
             employee.PhoneNumber = model.Phone;
+            employee.Skype = model.Skype;
+            employee.SocialSecurityID = model.SocialSecurityID;
 
             if (model.BirthDay != null)
             {
@@ -133,12 +135,16 @@ namespace BSSiseveeb.Public.Web.Controllers
         [AuthorizeLevel(AccessRights.Users)]
         public virtual async Task<ActionResult> SyncUsers()
         {
-            string tenantID = ClaimsPrincipal.Current.FindFirst(AppClaims.TenantId).Value;
 
-            Uri servicePointUri = new Uri(graphResourceID);
-            Uri serviceRoot = new Uri(servicePointUri, tenantID);
-            ActiveDirectoryClient activeDirectoryClient = new ActiveDirectoryClient(serviceRoot,
-                  async () => await GetTokenForApplication());
+            Uri servicePointUri = new Uri(AuthConfig.GraphResourceId);
+            Uri serviceRoot = new Uri(servicePointUri, AuthConfig.TenantId);
+            string token = await GetTokenForApplication();
+            if (token == null)
+            {
+                return RedirectToAction("SignIn", MVC.Account.Name);
+            }
+
+            ActiveDirectoryClient activeDirectoryClient = new ActiveDirectoryClient(serviceRoot, () => Task.FromResult(token));
 
             var result = await activeDirectoryClient.Users.ExecuteAsync();
             IEnumerable<IUser> users = result.CurrentPage.ToList();
@@ -169,7 +175,7 @@ namespace BSSiseveeb.Public.Web.Controllers
 
             EmployeeRepository.Commit();
 
-            return View(MVC.Admin.Views.EditEmployees, new WorkersViewModel() { Employees = EmployeeRepository.AsDto().ToList() });
+            return View(MVC.Admin.Views.EditEmployees, new WorkersViewModel() { Employees = EmployeeRepository.AsDto() });
         }
     }
 }

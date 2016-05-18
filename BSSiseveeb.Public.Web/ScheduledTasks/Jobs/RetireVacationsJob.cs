@@ -1,14 +1,10 @@
 ﻿using BSSiseveeb.Core;
 using BSSiseveeb.Core.Contracts.Repositories;
 using BSSiseveeb.Core.Domain;
-using BSSiseveeb.Core.Mappers;
-using BSSiseveeb.Public.Web.Controllers.API;
 using EntityFramework.Extensions;
 using Quartz;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 
 namespace BSSiseveeb.Public.Web.ScheduledTasks.Jobs
 {

@@ -1,9 +1,9 @@
-﻿using System;
+﻿using BSSiseveeb.Core.Domain;
+using BSSiseveeb.Core.Dto;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using BSSiseveeb.Core.Domain;
-using BSSiseveeb.Core.Dto;
 
 namespace BSSiseveeb.Core.Mappers
 {
@@ -20,7 +20,9 @@ namespace BSSiseveeb.Core.Mappers
                 PhoneNumber = employee.PhoneNumber,
                 Email = employee.Email,
                 Birthdate = employee.Birthdate,
-                ContractEnd = employee.ContractEnd
+                ContractEnd = employee.ContractEnd,
+                Skype = employee.Skype,
+                SocialSecurityID = employee.SocialSecurityID
             };
         }
 
@@ -40,7 +42,9 @@ namespace BSSiseveeb.Core.Mappers
                 Name = e.Name,
                 PhoneNumber = e.PhoneNumber,
                 Email = e.Email,
-                ContractStart = e.ContractStart
+                ContractStart = e.ContractStart,
+                Skype = e.Skype,
+                SocialSecurityID = e.SocialSecurityID
             };
         }
     }

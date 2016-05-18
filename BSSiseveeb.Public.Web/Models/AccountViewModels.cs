@@ -10,6 +10,7 @@ namespace BSSiseveeb.Public.Web.Models
         public string Name { get; set; }
 
         [DataType(DataType.PhoneNumber)]
+        [Display(Name = "Telefon: ")]
         public string Phone { get; set; }
 
         [Required]
@@ -17,21 +18,31 @@ namespace BSSiseveeb.Public.Web.Models
         public string Email { get; set; }
 
         [DataType(DataType.Date)]
+        [Display(Name = "Lepingu algus: ")]
         public DateTime? Start { get; set; }
 
         [DataType(DataType.Date)]
+        [Display(Name = "Lepingu lõpp: ")]
         public DateTime? End { get; set; }
 
         [DataType(DataType.Date)]
+        [Display(Name = "Sünnipäev: ")]
         public DateTime? BirthDay { get; set; }
 
         [Required]
+        [Display(Name = "Puhkusepäevad: ")]
         public int VacationDays { get; set; }
 
         public string OldRole { get; set; }
 
-        [Display(Name = "Role")]
+        [Display(Name = "Roll: ")]
         public string NewRole { get; set; }
+
+        [Display(Name = "Skype: ")]
+        public string Skype { get; set; }
+
+        [Display(Name = "Isikukood: ")]
+        public string SocialSecurityID { get; set; }
 
         public List<string> Roles { get; set; }
     }
@@ -39,24 +50,30 @@ namespace BSSiseveeb.Public.Web.Models
     public class ChangeAccountSettingsViewModel
     {
         [DataType(DataType.Date)]
-        [Display(Name = "Birthday: ")]
+        [Display(Name = "Sünnipäev: ")]
         public DateTime? BirthDay { get; set; }
 
         [DataType(DataType.PhoneNumber)]
-        [Display(Name = "Phone: ")]
+        [Display(Name = "Telefon: ")]
         public string Phone { get; set; }
 
-        [Display(Name = "Messages about vacations")]
+        [Display(Name = "Teated puhkuste kohta")]
         public bool VacationMessages { get; set; }
 
-        [Display(Name = "Messages about requests")]
+        [Display(Name = "Teated töömaterjalide taotluste kohta")]
         public bool RequestMessages { get; set; }
 
-        [Display(Name = "Subscribe to monthly birthday message")]
+        [Display(Name = "Igakuine sünnipäevade meeldetuletus")]
         public bool MonthlyBirthdayMessages { get; set; }
 
-        [Display(Name = "Subscribe to daily birthday message")]
+        [Display(Name = "Igapäevane sünnipäevade meeldetuletus")]
         public bool DailyBirthdayMessages { get; set; }
+
+        [Display(Name = "Skype: ")]
+        public string Skype { get; set; }
+
+        [Display(Name = "Isikukood: ")]
+        public string SocialSecurityID { get; set; }
 
         public string Message { get; set; }
     }

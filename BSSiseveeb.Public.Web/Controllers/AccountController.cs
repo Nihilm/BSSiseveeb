@@ -1,19 +1,17 @@
-﻿using System.Web;
-using System.Web.Mvc;
-using System.Linq;
-using BSSiseveeb.Core.Domain;
+﻿using BSSiseveeb.Core.Domain;
+using BSSiseveeb.Core.Mappers;
+using BSSiseveeb.Public.Web.Attributes;
 using BSSiseveeb.Public.Web.Models;
+using Microsoft.Azure.ActiveDirectory.GraphClient;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OpenIdConnect;
-using BSSiseveeb.Public.Web.Attributes;
-using System.Security.Claims;
-using BSSiseveeb.Core;
 using System;
-using Microsoft.Azure.ActiveDirectory.GraphClient;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using BSSiseveeb.Core.Mappers;
+using System.Web;
+using System.Web.Mvc;
 
 namespace BSSiseveeb.Public.Web.Controllers
 {
@@ -30,7 +28,8 @@ namespace BSSiseveeb.Public.Web.Controllers
                 DailyBirthdayMessages = employee.DailyBirthdayMessages,
                 MonthlyBirthdayMessages = employee.MonthlyBirthdayMessages,
                 RequestMessages = employee.RequestMessages,
-                VacationMessages = employee.VacationMessages
+                VacationMessages = employee.VacationMessages,
+                Skype = employee.Skype
             };
 
             return View(model);
@@ -47,6 +46,7 @@ namespace BSSiseveeb.Public.Web.Controllers
             employee.DailyBirthdayMessages = model.DailyBirthdayMessages;
             employee.RequestMessages = model.RequestMessages;
             employee.VacationMessages = model.VacationMessages;
+            employee.Skype = model.Skype;
 
             if (model.BirthDay != null)
             {
@@ -65,7 +65,7 @@ namespace BSSiseveeb.Public.Web.Controllers
         [ValidateAntiForgeryToken]
         public virtual async Task<ActionResult> InitializeAccount(ChangeAccountSettingsViewModel model)
         {
-            if(EmployeeRepository.SingleOrDefault(x => x.Id == CurrentUserId) != null)
+            if (EmployeeRepository.SingleOrDefault(x => x.Id == CurrentUserId) != null)
             {
                 var employee = EmployeeRepository.First(x => x.Id == CurrentUser.Id);
                 employee.PhoneNumber = model.Phone;
@@ -73,6 +73,8 @@ namespace BSSiseveeb.Public.Web.Controllers
                 employee.DailyBirthdayMessages = model.DailyBirthdayMessages;
                 employee.RequestMessages = model.RequestMessages;
                 employee.VacationMessages = model.VacationMessages;
+                employee.Skype = model.Skype;
+                employee.SocialSecurityID = model.SocialSecurityID;
                 employee.IsInitialized = true;
 
                 if (model.BirthDay != null)
@@ -85,10 +87,8 @@ namespace BSSiseveeb.Public.Web.Controllers
             }
             else
             {
-                string tenantID = ClaimsPrincipal.Current.FindFirst(AppClaims.TenantId).Value;
-
-                Uri servicePointUri = new Uri(graphResourceID);
-                Uri serviceRoot = new Uri(servicePointUri, tenantID);
+                Uri servicePointUri = new Uri(AuthConfig.GraphResourceId);
+                Uri serviceRoot = new Uri(servicePointUri, AuthConfig.TenantId);
                 ActiveDirectoryClient activeDirectoryClient = new ActiveDirectoryClient(serviceRoot,
                       async () => await GetTokenForApplication());
 
@@ -110,6 +110,8 @@ namespace BSSiseveeb.Public.Web.Controllers
                     MonthlyBirthdayMessages = model.MonthlyBirthdayMessages,
                     DailyBirthdayMessages = model.DailyBirthdayMessages,
                     Birthdate = model.BirthDay,
+                    Skype = model.Skype,
+                    SocialSecurityID = model.SocialSecurityID
                 };
 
                 EmployeeRepository.Add(employee);
@@ -135,7 +137,7 @@ namespace BSSiseveeb.Public.Web.Controllers
             }
 
 
-            return View(MVC.Home.Views.Index , new IndexViewModel() { Employees = employees.ToList(), Vacations = vacations });
+            return View(MVC.Home.Views.Index, new IndexViewModel() { Employees = employees.ToList(), Vacations = vacations });
         }
 
 
@@ -152,14 +154,14 @@ namespace BSSiseveeb.Public.Web.Controllers
         {
             if (!Request.IsAuthenticated)
             {
-                HttpContext.GetOwinContext().Authentication.Challenge(new AuthenticationProperties { RedirectUri = "/" },
+                HttpContext.GetOwinContext().Authentication.Challenge(new AuthenticationProperties { RedirectUri = Url.Content("~/") },
                     OpenIdConnectAuthenticationDefaults.AuthenticationType);
             }
         }
 
         public void SignOut()
         {
-            string callbackUrl = Url.Action("SignOutCallback", "Account", routeValues: null, protocol: Request.Url.Scheme);
+            string callbackUrl = Url.Action(MVC.Account.SignOutCallback());
 
             HttpContext.GetOwinContext().Authentication.SignOut(
                 new AuthenticationProperties { RedirectUri = callbackUrl },
@@ -168,12 +170,7 @@ namespace BSSiseveeb.Public.Web.Controllers
 
         public virtual ActionResult SignOutCallback()
         {
-            if (Request.IsAuthenticated)
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
-            return View();
+            return RedirectToAction(MVC.Home.Index());
         }
     }
 }

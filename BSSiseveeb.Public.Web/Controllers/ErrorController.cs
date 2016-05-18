@@ -8,5 +8,10 @@ namespace BSSiseveeb.Public.Web.Controllers
         {
             return View();
         }
+
+        public virtual ActionResult ServerError()
+        {
+            return View();
+        }
     }
 }

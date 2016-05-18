@@ -4,7 +4,7 @@
     <td>@Model.Name</td>
     @if(Model.Birthdate.HasValue)
     {
-        <td>@Model.Birthdate.Value.ToString("dd MMM yyyy")</td>
+        <td>@Model.Birthdate.Value.ToString("dd MMMM")</td>
     }
     else
     {
@@ -12,4 +12,5 @@
     }
     <td>@Model.PhoneNumber</td>
     <td>@Model.Email</td>
+    <td>@Model.Skype</td>
 </tr>

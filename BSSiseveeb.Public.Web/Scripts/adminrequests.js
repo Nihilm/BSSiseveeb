@@ -40,7 +40,7 @@ function showDatePicker(dp) {
 }
 
 function drawRequests() {
-    $.get('/API/AdminApi/GetPendingRequests').done(function (data) {
+    $.get(app.root + 'API/AdminApi/GetPendingRequests').done(function (data) {
         if (data.Message) {
             $requestStatus.empty().append("Teil puuduvad õigused näha pending taotlusi.");
         } else {
@@ -60,7 +60,7 @@ function drawRequests() {
 }
 
 function acceptRequest(id) {
-    $.post('/API/AdminApi/ApproveRequest', { Id: id })
+    $.post(app.root + 'API/AdminApi/ApproveRequest', { Id: id })
         .success(function () {
             $requests.empty();
             drawRequests();
@@ -72,7 +72,7 @@ function acceptRequest(id) {
 }
 
 function declineRequest(id) {
-    $.post('/API/AdminApi/DeclineRequest', { Id: id })
+    $.post(app.root + 'API/AdminApi/DeclineRequest', { Id: id })
         .success(function () {
             $requests.empty();
             drawRequests();

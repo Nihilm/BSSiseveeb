@@ -1,12 +1,12 @@
-﻿using System;
-using System.Linq;
-using System.Web.Http;
-using System.Web.WebPages;
-using BSSiseveeb.Core.Domain;
+﻿using BSSiseveeb.Core.Domain;
+using BSSiseveeb.Core.Mappers;
 using BSSiseveeb.Public.Web.Attributes;
 using BSSiseveeb.Public.Web.Controllers.API.Helpers;
 using BSSiseveeb.Public.Web.Models;
-using BSSiseveeb.Core.Mappers;
+using System;
+using System.Linq;
+using System.Web.Http;
+using System.Web.WebPages;
 
 namespace BSSiseveeb.Public.Web.Controllers.API
 {

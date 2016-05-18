@@ -1,17 +1,24 @@
-﻿using System;
-using System.Data.Entity;
 using BSSiseveeb.Core.Domain;
-using BSSiseveeb.Core.Contracts.Repositories;
+using System.Data.Entity.Migrations;
+using System.Linq;
 
-namespace BSSiseveeb.Data
+namespace BSSiseveeb.Data.Migrations
 {
-    public class DbInitializer : DropCreateDatabaseIfModelChanges<BSContext>
+    public sealed class Configuration : DbMigrationsConfiguration<BSContext>
     {
-        private BSContext _ctx;
+        public Configuration()
+        {
+            AutomaticMigrationsEnabled = true;
+            AutomaticMigrationDataLossAllowed = false;
+            ContextKey = "BSSiseveeb.Data.BSContext";
+        }
 
         protected override void Seed(BSContext context)
         {
-            _ctx = context;
+            if (context.Roles.Any())
+            {
+                return;
+            }
 
             var adminRole = new Role
             {
@@ -28,7 +35,7 @@ namespace BSSiseveeb.Data
             var requestHandler = new Role
             {
                 Name = "RequestHandler",
-                Rights = AccessRights.Standard | AccessRights.Requests 
+                Rights = AccessRights.Standard | AccessRights.Requests
             };
 
             var vacationHandler = new Role
@@ -43,16 +50,13 @@ namespace BSSiseveeb.Data
                 Rights = AccessRights.Standard | AccessRights.Users
             };
 
-            _ctx.Roles.Add(adminRole);
-            _ctx.Roles.Add(userRole);
-            _ctx.Roles.Add(requestHandler);
-            _ctx.Roles.Add(vacationHandler);
-            _ctx.Roles.Add(userHandler);
-
-            
+            context.Roles.Add(adminRole);
+            context.Roles.Add(userRole);
+            context.Roles.Add(requestHandler);
+            context.Roles.Add(vacationHandler);
+            context.Roles.Add(userHandler);
 
             base.Seed(context);
         }
-
     }
 }

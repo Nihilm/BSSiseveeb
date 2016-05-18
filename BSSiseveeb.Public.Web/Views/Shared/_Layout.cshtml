@@ -36,6 +36,12 @@
         </footer>
     </div>
 
+    <script>
+        var app = {
+            root: '@Url.Content("~/")'
+        }
+    </script>
+
     @Scripts.Render(ScriptBundles.Jquery)
     @Scripts.Render(ScriptBundles.Bootstrap)
     @RenderSection("scripts", required: false)

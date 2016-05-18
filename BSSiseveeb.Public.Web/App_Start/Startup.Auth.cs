@@ -1,33 +1,45 @@
-﻿using System;
-using System.Configuration;
-using System.IdentityModel.Claims;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Helpers;
-using BSSiseveeb.Core;
+﻿using BSSiseveeb.Core;
 using BSSiseveeb.Data;
+using BSSiseveeb.Public.Web.Models;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OpenIdConnect;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Owin;
-using BSSiseveeb.Public.Web.Models;
+using System;
+using System.Configuration;
+using System.IdentityModel.Claims;
+using System.Web;
+using System.Web.Helpers;
 
 namespace BSSiseveeb.Public.Web
 {
+    public static class AuthConfig
+    {
+        // This is the resource ID of the AAD Graph API.  We'll need this to request a token to call the Graph API.
+        public const string GraphResourceId = "https://graph.windows.net";
+
+        public static readonly string ClientId;
+        public static readonly string AppKey;
+        public static readonly string AadInstance;
+        public static readonly string TenantId;
+        public static readonly string PostLogOutRedirectUri;
+        public static readonly string RedirectUri;
+
+        static AuthConfig()
+        {
+            ClientId = ConfigurationManager.AppSettings["ida:ClientId"];
+            AppKey = ConfigurationManager.AppSettings["ida:ClientSecret"];
+            AadInstance = ConfigurationManager.AppSettings["ida:AADInstance"];
+            TenantId = ConfigurationManager.AppSettings["ida:TenantId"];
+            PostLogOutRedirectUri = ConfigurationManager.AppSettings["ida:PostLogoutRedirectUri"];
+            RedirectUri = ConfigurationManager.AppSettings["ida:RedirectUri"];
+        }
+    }
+
     public partial class Startup
     {
-        private static string clientId = ConfigurationManager.AppSettings["ida:ClientId"];
-        private static string appKey = ConfigurationManager.AppSettings["ida:ClientSecret"];
-        private static string aadInstance = ConfigurationManager.AppSettings["ida:AADInstance"];
-        private static string tenantId = ConfigurationManager.AppSettings["ida:TenantId"];
-        private static string postLogoutRedirectUri = ConfigurationManager.AppSettings["ida:PostLogoutRedirectUri"];
-        private static string redirectUri = ConfigurationManager.AppSettings["ida:RedirectUri"];
-
-        public static readonly string Authority = aadInstance + tenantId;
-
-        // This is the resource ID of the AAD Graph API.  We'll need this to request a token to call the Graph API.
-        string graphResourceId = "https://graph.windows.net";
+        public static readonly string Authority = AuthConfig.AadInstance + AuthConfig.TenantId;
 
         public void ConfigureAuth(IAppBuilder app)
         {
@@ -40,27 +52,27 @@ namespace BSSiseveeb.Public.Web
             app.UseOpenIdConnectAuthentication(
                 new OpenIdConnectAuthenticationOptions
                 {
-                    ClientId = clientId,
+                    ClientId = AuthConfig.ClientId,
                     Authority = Authority,
-                    PostLogoutRedirectUri = postLogoutRedirectUri,
-                    RedirectUri = redirectUri,
+                    PostLogoutRedirectUri = AuthConfig.PostLogOutRedirectUri,
+                    RedirectUri = AuthConfig.RedirectUri,
                     Notifications = new OpenIdConnectAuthenticationNotifications()
                     {
                         // If there is a code in the OpenID Connect response, redeem it for an access token and refresh token, and store those away.
                         AuthorizationCodeReceived = (context) =>
                         {
                             var code = context.Code;
-                            ClientCredential credential = new ClientCredential(clientId, appKey);
+                            ClientCredential credential = new ClientCredential(AuthConfig.ClientId, AuthConfig.AppKey);
                             string signedInUserID = context.AuthenticationTicket.Identity.FindFirst(ClaimTypes.NameIdentifier).Value;
                             AuthenticationContext authContext = new AuthenticationContext(Authority, new ADALTokenCache(signedInUserID, dbContext));
-                            AuthenticationResult result = authContext.AcquireTokenByAuthorizationCode(
-                            code, new Uri(HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Path)), credential, graphResourceId);
+                            var result = authContext.AcquireTokenByAuthorizationCodeAsync(
+                                code, new Uri(HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Path)), credential, AuthConfig.GraphResourceId);
 
-                            return Task.FromResult(0);
+                            return result;
                         }
                     }
                 });
-            
+
             AntiForgeryConfig.UniqueClaimTypeIdentifier = ClaimTypes.NameIdentifier;
         }
     }

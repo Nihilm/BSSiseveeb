@@ -12,7 +12,7 @@ function dateFormat(d) {
 
 function setNames() {
     var $names = $(".name");
-    $.get('/API/Calendar/GetEmployees').done(function (deta) {
+    $.get(app.root + 'API/Calendar/GetEmployees').done(function (deta) {
         $.each($names, function (i, name) {
             $.each(deta, function (index, employee) {
                 if (name.innerText == employee.Id) {

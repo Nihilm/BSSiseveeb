@@ -18,6 +18,8 @@ namespace BSSiseveeb.Core.Domain
         public bool DailyBirthdayMessages { get; set; }
         public int RoleId { get; set; }
         public bool IsInitialized { get; set; }
+        public string Skype { get; set; }
+        public string SocialSecurityID { get; set; }
 
         public virtual Role Role { get; set; }
     }

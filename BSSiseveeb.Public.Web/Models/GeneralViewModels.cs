@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using BSSiseveeb.Core.Dto;
+﻿using BSSiseveeb.Core.Dto;
+using System.Collections.Generic;
 
 namespace BSSiseveeb.Public.Web.Models
 {

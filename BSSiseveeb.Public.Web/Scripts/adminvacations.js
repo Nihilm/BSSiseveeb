@@ -12,7 +12,7 @@ $(document).ready(function () {
 });
 
 function drawVacations() {
-    $.get('/API/AdminApi/GetPendingVacations').done(function (data) {
+    $.get(app.root + 'API/AdminApi/GetPendingVacations').done(function (data) {
         if (data.Message) {
             $vacationStatus.empty().append("Teil puuduvad õigused näha pending puhkusi.");
         } else {
@@ -37,7 +37,7 @@ function drawVacations() {
 }
 
 function approveVacation(id) {
-    $.post('/API/AdminApi/ApproveVacation', { Id: id })
+    $.post(app.root + 'API/AdminApi/ApproveVacation', { Id: id })
         .success(function () {
             $vacations.empty();
             drawVacations();
@@ -51,7 +51,7 @@ function approveVacation(id) {
 }
 
 function declineVacation(id) {
-    $.post('/API/AdminApi/DeleteVacation', { Id: id })
+    $.post(app.root + 'API/AdminApi/DeleteVacation', { Id: id })
         .success(function () {
             $vacations.empty();
             drawVacations();
@@ -65,7 +65,7 @@ function declineVacation(id) {
 }
 
 function drawConfirmedVacations() {
-    $.get('/API/AdminApi/GetConfirmedVacations').done(function (data) {
+    $.get(app.root + 'API/AdminApi/GetConfirmedVacations').done(function (data) {
         if (data.Message) {
             $confirmedVacationStatus.empty().append("Teil puuduvad õigused näha confirmed puhkusi.");
         } else {
@@ -94,7 +94,7 @@ function modifyVacation(id) {
     var start = new Date($("#dpa" + id).data().date);
     var end = new Date($("#dpl" + id).data().date);
 
-    $.post('/API/AdminApi/ModifyVacation', { Id: id, Start: start.toISOString(), End: end.toISOString() })
+    $.post(app.root + 'API/AdminApi/ModifyVacation', { Id: id, Start: start.toISOString(), End: end.toISOString() })
         .success(function () {
             $("#dpl" + id).removeData();
             $("#dpa" + id).removeData();
@@ -110,7 +110,7 @@ function modifyVacation(id) {
 }
 
 function deleteVacation(id) {
-    $.post('/API/AdminApi/DeleteVacation', { Id: id })
+    $.post(app.root + 'API/AdminApi/DeleteVacation', { Id: id })
         .success(function () {
             $confirmedVacations.empty();
             drawConfirmedVacations();
