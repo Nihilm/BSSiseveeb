@@ -53,9 +53,6 @@ namespace BSSiseveeb.Public.Web.Controllers
                 employee.Birthdate = model.BirthDay;
             }
 
-            employee.IsInitialized = true;
-
-
             EmployeeRepository.SaveOrUpdate(employee);
             EmployeeRepository.Commit();
 
@@ -68,35 +65,56 @@ namespace BSSiseveeb.Public.Web.Controllers
         [ValidateAntiForgeryToken]
         public virtual async Task<ActionResult> InitializeAccount(ChangeAccountSettingsViewModel model)
         {
-            string tenantID = ClaimsPrincipal.Current.FindFirst(AppClaims.TenantId).Value;
-
-            Uri servicePointUri = new Uri(graphResourceID);
-            Uri serviceRoot = new Uri(servicePointUri, tenantID);
-            ActiveDirectoryClient activeDirectoryClient = new ActiveDirectoryClient(serviceRoot,
-                  async () => await GetTokenForApplication());
-
-            var result = await activeDirectoryClient.Users.ExecuteAsync();
-            IUser user = result.CurrentPage.Single(x => x.ObjectId == CurrentUserId);
-            var defaultRole = RoleRepository.Single(x => x.Name == "User");
-
-            var employee = new Employee()
+            if(EmployeeRepository.SingleOrDefault(x => x.Id == CurrentUserId) != null)
             {
-                Id = user.ObjectId,
-                Name = user.DisplayName,
-                Email = user.Mail,
-                Role = defaultRole,
-                PhoneNumber = model.Phone,
-                IsInitialized = true,
-                VacationDays = 28,
-                VacationMessages = model.VacationMessages,
-                RequestMessages = model.RequestMessages,
-                MonthlyBirthdayMessages = model.MonthlyBirthdayMessages,
-                DailyBirthdayMessages = model.DailyBirthdayMessages,
-                Birthdate = model.BirthDay,
-            };
+                var employee = EmployeeRepository.First(x => x.Id == CurrentUser.Id);
+                employee.PhoneNumber = model.Phone;
+                employee.MonthlyBirthdayMessages = model.MonthlyBirthdayMessages;
+                employee.DailyBirthdayMessages = model.DailyBirthdayMessages;
+                employee.RequestMessages = model.RequestMessages;
+                employee.VacationMessages = model.VacationMessages;
+                employee.IsInitialized = true;
 
-            EmployeeRepository.Add(employee);
-            EmployeeRepository.Commit();
+                if (model.BirthDay != null)
+                {
+                    employee.Birthdate = model.BirthDay;
+                }
+
+                EmployeeRepository.SaveOrUpdate(employee);
+                EmployeeRepository.Commit();
+            }
+            else
+            {
+                string tenantID = ClaimsPrincipal.Current.FindFirst(AppClaims.TenantId).Value;
+
+                Uri servicePointUri = new Uri(graphResourceID);
+                Uri serviceRoot = new Uri(servicePointUri, tenantID);
+                ActiveDirectoryClient activeDirectoryClient = new ActiveDirectoryClient(serviceRoot,
+                      async () => await GetTokenForApplication());
+
+                var result = await activeDirectoryClient.Users.ExecuteAsync();
+                IUser user = result.CurrentPage.Single(x => x.ObjectId == CurrentUserId);
+                var defaultRole = RoleRepository.Single(x => x.Name == "User");
+
+                var employee = new Employee()
+                {
+                    Id = user.ObjectId,
+                    Name = user.DisplayName,
+                    Email = user.Mail,
+                    Role = defaultRole,
+                    PhoneNumber = model.Phone,
+                    IsInitialized = true,
+                    VacationDays = 28,
+                    VacationMessages = model.VacationMessages,
+                    RequestMessages = model.RequestMessages,
+                    MonthlyBirthdayMessages = model.MonthlyBirthdayMessages,
+                    DailyBirthdayMessages = model.DailyBirthdayMessages,
+                    Birthdate = model.BirthDay,
+                };
+
+                EmployeeRepository.Add(employee);
+                EmployeeRepository.Commit();
+            }
 
             var employees = EmployeeRepository
                                     .Where(x => x.Birthdate.HasValue)
@@ -117,7 +135,7 @@ namespace BSSiseveeb.Public.Web.Controllers
             }
 
 
-            return View(MVC.Home.Views.Index, new IndexViewModel() { Employees = employees.ToList(), Vacations = vacations });
+            return View(MVC.Home.Views.Index , new IndexViewModel() { Employees = employees.ToList(), Vacations = vacations });
         }
 
 
@@ -152,7 +170,7 @@ namespace BSSiseveeb.Public.Web.Controllers
         {
             if (Request.IsAuthenticated)
             {
-                return RedirectToAction(MVC.Home.Views.Index);
+                return RedirectToAction("Index", "Home");
             }
 
             return View();

@@ -81,7 +81,7 @@ namespace BSSiseveeb.Public.Web.Controllers
             EmployeeRepository.Commit();
 
 
-            return View(MVC.Admin.Views.EditEmployee, new WorkersViewModel() { Employees = EmployeeRepository.AsDto() });
+            return View(MVC.Admin.Views.EditEmployees, new WorkersViewModel() { Employees = EmployeeRepository.AsDto() });
         }
 
         [HttpPost]
@@ -162,7 +162,8 @@ namespace BSSiseveeb.Public.Web.Controllers
                 VacationDays = 28
             });
 
-            var newUsers = appUsers.Where(x => !currentEmployees.Any(e => x.Id == x.Id));
+            //var newUsers = appUsers.Where(x => !currentEmployees.Any(e => x.Id == x.Id));
+            var newUsers = appUsers.Where(x => !currentEmployees.Contains(x.Id));
 
             EmployeeRepository.AddRange(newUsers);
 
