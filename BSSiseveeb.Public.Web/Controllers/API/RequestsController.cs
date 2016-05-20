@@ -1,7 +1,6 @@
 ﻿using BSSiseveeb.Core.Domain;
 using BSSiseveeb.Core.Mappers;
 using BSSiseveeb.Public.Web.Attributes;
-using BSSiseveeb.Public.Web.Controllers.API.Helpers;
 using BSSiseveeb.Public.Web.Models;
 using System;
 using System.Linq;
@@ -40,7 +39,7 @@ namespace BSSiseveeb.Public.Web.Controllers.API
             var emails = EmployeeRepository
                     .Where(x => x.RequestMessages == true && x.Role.Rights.HasFlag(AccessRights.Requests)).Select(x => x.Email).ToList();
 
-            EmailHelper.RequestRequested(request, emails);
+            EmailService.RequestRequested(request, emails);
 
             return Ok();
         }

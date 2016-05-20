@@ -1,0 +1,7 @@
+﻿@model BSSiseveeb.Public.Web.Models.CsvImportViewModel
+
+@using (Html.BeginForm(MVC.Admin.ParseCsv(), FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <input type="file" name="@Html.NameFor(x => x.CsvFile)" id="@Html.IdFor(x => x.CsvFile)" />
+    <input type="submit" value="Upload" />
+}

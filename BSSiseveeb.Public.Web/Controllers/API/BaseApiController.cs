@@ -1,5 +1,6 @@
 ﻿using BSSiseveeb.Core;
 using BSSiseveeb.Core.Contracts.Repositories;
+using BSSiseveeb.Core.Contracts.Services;
 using BSSiseveeb.Core.Domain;
 using BSSiseveeb.Core.Dto;
 using BSSiseveeb.Core.Mappers;
@@ -16,6 +17,7 @@ namespace BSSiseveeb.Public.Web.Controllers.API
         public IEmployeeRepository EmployeeRepository { get; set; }
         public IRequestRepository RequestRepository { get; set; }
         public IRoleRepository RoleRepository { get; set; }
+        public IEmailService EmailService { get; set; }
 
         public string CurrentUserId
         {

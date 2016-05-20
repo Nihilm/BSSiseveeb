@@ -19,34 +19,8 @@ $(document).ready(function () {
     });
     updateHeader();
     drawMyVacations();
-
-    $.each(datepickers, function (index, picker) {
-        var checkin = $(picker).datepicker({
-            onRender: function (date) {
-                return date.valueOf() < now.valueOf() ? 'disabled' : '';
-            }
-        }).on('changeDate', function (ev) {
-            if (ev.date.valueOf() > checkout.date.valueOf()) {
-                var newDate = new Date(ev.date)
-                newDate.setDate(newDate.getDate() + 1);
-                checkout.setValue(newDate);
-            }
-            checkin.hide();
-            $(picker)[0].focus();
-        }).data('datepicker');
-        var checkout = $(picker).datepicker({
-            onRender: function (date) {
-                return date.valueOf() <= checkin.date.valueOf() ? 'disabled' : '';
-            }
-        }).on('changeDate', function (ev) {
-            checkout.hide();
-        }).data('datepicker');
-
-        $(picker).datepicker()
-            .on('changeDate', function (ev) {
-                $(picker).date = ev.date;
-            });
-    });
+    initDatepicker(datepickers);
+    
 });
 
 function showDatePicker(dp) {
@@ -128,8 +102,8 @@ function sendVacationDate() {
             $("#algus").val('');
             $("#lõpp").val('');
             $comment.val('');
-            $("#dp1").removeData();
-            $("#dp2").removeData();
+            $("#dp1").removeData("date");
+            $("#dp2").removeData("date");
             drawMyVacations();
         })
         .error(function (data) {
@@ -183,4 +157,35 @@ function getVacationDays() {
         .done(function (data) {
             $remainingDays.empty().append("Alles jäänud puhkepäevad: " + data);
         });
+}
+
+
+function initDatepicker(datepickers) {
+    $.each(datepickers, function (index, picker) {
+        var checkin = $(picker).datepicker({
+            onRender: function (date) {
+                return date.valueOf() < now.valueOf() ? 'disabled' : '';
+            }
+        }).on('changeDate', function (ev) {
+            if (ev.date.valueOf() > checkout.date.valueOf()) {
+                var newDate = new Date(ev.date)
+                newDate.setDate(newDate.getDate() + 1);
+                checkout.setValue(newDate);
+            }
+            checkin.hide();
+            $(picker)[0].focus();
+        }).data('datepicker');
+        var checkout = $(picker).datepicker({
+            onRender: function (date) {
+                return date.valueOf() <= checkin.date.valueOf() ? 'disabled' : '';
+            }
+        }).on('changeDate', function (ev) {
+            checkout.hide();
+        }).data('datepicker');
+
+        $(picker).datepicker()
+            .on('changeDate', function (ev) {
+                $(picker).date = ev.date;
+            });
+    });
 }

@@ -23,12 +23,18 @@
         </tr>
     </thead>
     <tbody id="workersBody">
-    @for(var i = 0; i < Model.Employees.Count(); i++)
-    {
-        @Html.DisplayFor(x => x.Employees[i], "AdminEmployee")
-    }
+        @for (var i = 0; i < Model.Employees.Count(); i++)
+        {
+            @Html.DisplayFor(x => x.Employees[i], "AdminEmployee")
+        }
     </tbody>
 </table>
+
+<h2>@*Sync with .csv file: @Html.ActionLink("CSVsync", MVC.Admin.ParseCsv())*@</h2>
+@{ Html.RenderPartial(MVC.Admin.Views._UploadCsv, Model.ImportViewModel); }
+
+
+
 
 @section scripts {
     @Scripts.Render(ScriptBundles.Workers)

@@ -77,6 +77,12 @@ namespace BSSiseveeb.Public.Web.Controllers
         {
             return new T4MVC_System_Web_Mvc_ActionResult(Area, Name, ActionNames.GeneratePdf);
         }
+        [NonAction]
+        [GeneratedCode("T4MVC", "2.0"), DebuggerNonUserCode]
+        public virtual System.Web.Mvc.ActionResult ParseCsv()
+        {
+            return new T4MVC_System_Web_Mvc_ActionResult(Area, Name, ActionNames.ParseCsv);
+        }
 
         [GeneratedCode("T4MVC", "2.0"), DebuggerNonUserCode]
         public AdminController Actions { get { return MVC.Admin; } }
@@ -100,6 +106,7 @@ namespace BSSiseveeb.Public.Web.Controllers
             public readonly string EditEmployee = "EditEmployee";
             public readonly string GeneratePdf = "GeneratePdf";
             public readonly string SyncUsers = "SyncUsers";
+            public readonly string ParseCsv = "ParseCsv";
         }
 
         [GeneratedCode("T4MVC", "2.0"), DebuggerNonUserCode]
@@ -112,6 +119,7 @@ namespace BSSiseveeb.Public.Web.Controllers
             public const string EditEmployee = "EditEmployee";
             public const string GeneratePdf = "GeneratePdf";
             public const string SyncUsers = "SyncUsers";
+            public const string ParseCsv = "ParseCsv";
         }
 
 
@@ -139,6 +147,14 @@ namespace BSSiseveeb.Public.Web.Controllers
         {
             public readonly string model = "model";
         }
+        static readonly ActionParamsClass_ParseCsv s_params_ParseCsv = new ActionParamsClass_ParseCsv();
+        [GeneratedCode("T4MVC", "2.0"), DebuggerNonUserCode]
+        public ActionParamsClass_ParseCsv ParseCsvParams { get { return s_params_ParseCsv; } }
+        [GeneratedCode("T4MVC", "2.0"), DebuggerNonUserCode]
+        public class ActionParamsClass_ParseCsv
+        {
+            public readonly string model = "model";
+        }
         static readonly ViewsClass s_views = new ViewsClass();
         [GeneratedCode("T4MVC", "2.0"), DebuggerNonUserCode]
         public ViewsClass Views { get { return s_views; } }
@@ -149,11 +165,13 @@ namespace BSSiseveeb.Public.Web.Controllers
             public _ViewNamesClass ViewNames { get { return s_ViewNames; } }
             public class _ViewNamesClass
             {
+                public readonly string _UploadCsv = "_UploadCsv";
                 public readonly string EditEmployee = "EditEmployee";
                 public readonly string EditEmployees = "EditEmployees";
                 public readonly string Requests = "Requests";
                 public readonly string Vacations = "Vacations";
             }
+            public readonly string _UploadCsv = "~/Views/Admin/_UploadCsv.cshtml";
             public readonly string EditEmployee = "~/Views/Admin/EditEmployee.cshtml";
             public readonly string EditEmployees = "~/Views/Admin/EditEmployees.cshtml";
             public readonly string Requests = "~/Views/Admin/Requests.cshtml";
@@ -244,6 +262,18 @@ namespace BSSiseveeb.Public.Web.Controllers
             var callInfo = new T4MVC_System_Web_Mvc_ActionResult(Area, Name, ActionNames.SyncUsers);
             SyncUsersOverride(callInfo);
             return System.Threading.Tasks.Task.FromResult(callInfo as System.Web.Mvc.ActionResult);
+        }
+
+        [NonAction]
+        partial void ParseCsvOverride(T4MVC_System_Web_Mvc_ActionResult callInfo, BSSiseveeb.Public.Web.Models.CsvImportViewModel model);
+
+        [NonAction]
+        public override System.Web.Mvc.ActionResult ParseCsv(BSSiseveeb.Public.Web.Models.CsvImportViewModel model)
+        {
+            var callInfo = new T4MVC_System_Web_Mvc_ActionResult(Area, Name, ActionNames.ParseCsv);
+            ModelUnbinderHelpers.AddRouteValues(callInfo.RouteValueDictionary, "model", model);
+            ParseCsvOverride(callInfo, model);
+            return callInfo;
         }
 
     }

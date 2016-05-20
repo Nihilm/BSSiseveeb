@@ -1,13 +1,14 @@
-﻿using BSSiseveeb.Core.Domain;
+﻿using BSSiseveeb.Core.Contracts.Services;
+using BSSiseveeb.Core.Domain;
 using Castle.Core.Internal;
 using System.Collections.Generic;
 using System.Net.Mail;
 
-namespace BSSiseveeb.Public.Web.Controllers.API.Helpers
+namespace BSSiseveeb.ApplicationServices.Services
 {
-    public class EmailHelper
+    public class EmailService : IEmailService
     {
-        public static void SendEmail(IEnumerable<string> emails, string subject, string body)
+        public void SendEmail(IEnumerable<string> emails, string subject, string body)
         {
             var message = new MailMessage();
             foreach (var email in emails)
@@ -26,7 +27,7 @@ namespace BSSiseveeb.Public.Web.Controllers.API.Helpers
             }
         }
 
-        public static void VacationModified(Vacation vacation, IEnumerable<string> emails)
+        public void VacationModified(Vacation vacation, IEnumerable<string> emails)
         {
             var start = vacation.StartDate.ToString("d");
             var end = vacation.EndDate.ToString("d");
@@ -37,7 +38,7 @@ namespace BSSiseveeb.Public.Web.Controllers.API.Helpers
             SendEmail(emails, subject, body);
         }
 
-        public static void VacationRequested(Vacation vacation, IEnumerable<string> emails)
+        public void VacationRequested(Vacation vacation, IEnumerable<string> emails)
         {
             var start = vacation.StartDate.ToString("d");
             var end = vacation.EndDate.ToString("d");
@@ -46,7 +47,7 @@ namespace BSSiseveeb.Public.Web.Controllers.API.Helpers
             SendEmail(emails, subject, body);
         }
 
-        public static void VacationApproved(Vacation vacation, IEnumerable<string> emails)
+        public void VacationApproved(Vacation vacation, IEnumerable<string> emails)
         {
             var start = vacation.StartDate.ToString("d");
             var end = vacation.EndDate.ToString("d");
@@ -56,7 +57,7 @@ namespace BSSiseveeb.Public.Web.Controllers.API.Helpers
             SendEmail(emails, subject, body);
         }
 
-        public static void VacationDenied(Vacation vacation, IEnumerable<string> emails)
+        public void VacationDenied(Vacation vacation, IEnumerable<string> emails)
         {
             var start = vacation.StartDate.ToString("d");
             var end = vacation.EndDate.ToString("d");
@@ -66,7 +67,7 @@ namespace BSSiseveeb.Public.Web.Controllers.API.Helpers
             SendEmail(emails, subject, body);
         }
 
-        public static void RequestRequested(Request request, IEnumerable<string> emails)
+        public void RequestRequested(Request request, IEnumerable<string> emails)
         {
             var subject = $"Uus töömaterjalide taotlus {request.Employee.Name} poolt";
             var body = $"<p> {request.Employee.Name} taotleb endale järgnevaid töövahendeid: </br>" +
@@ -74,7 +75,7 @@ namespace BSSiseveeb.Public.Web.Controllers.API.Helpers
             SendEmail(emails, subject, body);
         }
 
-        public static void RequestApproved(Request request, IEnumerable<string> emails)
+        public void RequestApproved(Request request, IEnumerable<string> emails)
         {
             var subject = "Teie taotlus töömaterjalide järele sai heakskiidu";
             var body = $"<p>Teie taotlus töömaterjalide {request.Req} järele sai heakskiidu.</p>" +
@@ -82,7 +83,7 @@ namespace BSSiseveeb.Public.Web.Controllers.API.Helpers
             SendEmail(emails, subject, body);
         }
 
-        public static void RequestDenied(Request request, IEnumerable<string> emails)
+        public void RequestDenied(Request request, IEnumerable<string> emails)
         {
             var subject = "Teie taotlus töömaterjalide järele lükati tagasi";
             var body = $"<p>Teie taotlus töömaterjalide {request.Req} järele lükati tagasi.</p>" +
@@ -90,7 +91,7 @@ namespace BSSiseveeb.Public.Web.Controllers.API.Helpers
             SendEmail(emails, subject, body);
         }
 
-        public static void TodayBirthday(IEnumerable<Employee> birthdays, IEnumerable<string> emails)
+        public void TodayBirthday(IEnumerable<Employee> birthdays, IEnumerable<string> emails)
         {
             var subject = "Tänased sünnipäevalised!";
             var body = $"<ul><li>Täna on sünnipäev:</li>";
@@ -103,8 +104,8 @@ namespace BSSiseveeb.Public.Web.Controllers.API.Helpers
             body += "</ul></br><h3>Soovime neile kõigile head sünnipäeva!</h3>";
             SendEmail(emails, subject, body);
         }
-        
-        public static void MonthBirthday(IEnumerable<Employee> birthdays, IEnumerable<string> emails)
+
+        public void MonthBirthday(IEnumerable<Employee> birthdays, IEnumerable<string> emails)
         {
             var subject = "Selle kuu sünnipäevalised!";
             var body = $"<ul><li>Sellel kuul on sünnipäev:</li>";

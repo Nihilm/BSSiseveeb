@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BSSiseveeb.Public.Web", "BS
 		{B6B87063-65A3-40E7-807B-BD97CED8CD73} = {B6B87063-65A3-40E7-807B-BD97CED8CD73}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BSSiseveeb.ApplicationServices", "BSSiseveeb.ApplicationServices\BSSiseveeb.ApplicationServices.csproj", "{B66AC5A7-C7B9-4F0E-ACD8-10015251809B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,10 @@ Global
 		{A55E7D92-27EE-470B-ACA5-863E3108DD44}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A55E7D92-27EE-470B-ACA5-863E3108DD44}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A55E7D92-27EE-470B-ACA5-863E3108DD44}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B66AC5A7-C7B9-4F0E-ACD8-10015251809B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B66AC5A7-C7B9-4F0E-ACD8-10015251809B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B66AC5A7-C7B9-4F0E-ACD8-10015251809B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B66AC5A7-C7B9-4F0E-ACD8-10015251809B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

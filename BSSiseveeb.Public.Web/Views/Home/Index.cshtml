@@ -28,7 +28,7 @@
             <li><h4>Puhkused sellel Kuul:</h4></li>
             @foreach (var vacation in Model.Vacations)
             {
-                <li>@vacation</li>
+                <li>@vacation.EmployeeName @vacation.StartDateFormatted - @vacation.EndDateFormatted</li>
             }
             @if (@Model.Vacations.IsNullOrEmpty())
             {

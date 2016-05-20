@@ -2,12 +2,10 @@
 using BSSiseveeb.Core.Mappers;
 using BSSiseveeb.Data;
 using BSSiseveeb.Public.Web.Attributes;
-using BSSiseveeb.Public.Web.Controllers.API.Helpers;
 using BSSiseveeb.Public.Web.Models;
 using System;
 using System.Linq;
 using System.Web.Http;
-
 
 namespace BSSiseveeb.Public.Web.Controllers.API
 {
@@ -55,7 +53,7 @@ namespace BSSiseveeb.Public.Web.Controllers.API
                 .Select(x => x.Email)
                 .ToList();
 
-            EmailHelper.VacationApproved(vacation, emails);
+            EmailService.VacationApproved(vacation, emails);
 
             return Ok();
         }
@@ -76,7 +74,7 @@ namespace BSSiseveeb.Public.Web.Controllers.API
             RequestRepository.Commit();
 
             var emails = EmployeeRepository.Where(x => x.RequestMessages == true && x.Id == request.EmployeeId).Select(x => x.Email).ToList();
-            EmailHelper.RequestApproved(request, emails);
+            EmailService.RequestApproved(request, emails);
 
             return Ok();
         }
@@ -92,7 +90,7 @@ namespace BSSiseveeb.Public.Web.Controllers.API
             RequestRepository.Commit();
 
             var emails = EmployeeRepository.Where(x => x.RequestMessages == true && x.Id == request.EmployeeId).Select(x => x.Email).ToList();
-            EmailHelper.RequestDenied(request, emails);
+            EmailService.RequestDenied(request, emails);
 
             return Ok();
         }
@@ -141,7 +139,7 @@ namespace BSSiseveeb.Public.Web.Controllers.API
 
 
             var emails = EmployeeRepository.Where(x => x.VacationMessages == true && x.Id == vacation.EmployeeId).Select(x => x.Email).ToList();
-            EmailHelper.VacationModified(vacation, emails);
+            EmailService.VacationModified(vacation, emails);
 
             return Ok();
         }
@@ -161,7 +159,7 @@ namespace BSSiseveeb.Public.Web.Controllers.API
             VacationRepository.SaveOrUpdate(vacation);
 
             var emails = EmployeeRepository.Where(x => x.VacationMessages == true && x.Id == vacation.EmployeeId).Select(x => x.Email).ToList();
-            EmailHelper.VacationDenied(vacation, emails);
+            EmailService.VacationDenied(vacation, emails);
 
             ContextManager.Commit();
             return Ok();

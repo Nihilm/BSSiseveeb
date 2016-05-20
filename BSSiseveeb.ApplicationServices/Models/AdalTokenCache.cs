@@ -6,7 +6,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web.Security;
 
-namespace BSSiseveeb.Public.Web.Models
+namespace BSSiseveeb.ApplicationServices.Models
 {
     public class ADALTokenCache : TokenCache
     {

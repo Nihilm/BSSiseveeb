@@ -1,7 +1,7 @@
 ﻿using BSSiseveeb.Core;
 using BSSiseveeb.Core.Contracts.Repositories;
+using BSSiseveeb.Core.Contracts.Services;
 using BSSiseveeb.Core.Domain;
-using BSSiseveeb.Public.Web.Controllers.API.Helpers;
 using Quartz;
 using System;
 using System.Linq;
@@ -11,6 +11,7 @@ namespace BSSiseveeb.Public.Web.ScheduledTasks.Jobs
     public class DailyBirthdayJob : IJob
     {
         private readonly IEmployeeRepository EmployeeRepository;
+        public IEmailService EmailService { get; set; }
 
         public DailyBirthdayJob()
         {
@@ -36,7 +37,7 @@ namespace BSSiseveeb.Public.Web.ScheduledTasks.Jobs
                 return;
             }
 
-            EmailHelper.TodayBirthday(birthdays, emails);
+            EmailService.TodayBirthday(birthdays, emails);
         }
     }
 }

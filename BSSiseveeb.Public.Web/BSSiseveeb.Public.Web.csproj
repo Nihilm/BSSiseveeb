@@ -288,7 +288,6 @@
     <Compile Include="Controllers\API\AdminApiController.cs" />
     <Compile Include="Controllers\API\BaseApiController.cs" />
     <Compile Include="Controllers\API\CalendarController.cs" />
-    <Compile Include="Controllers\API\Helpers\EmailHelper.cs" />
     <Compile Include="Controllers\API\RequestsController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
@@ -308,8 +307,8 @@
       <DependentUpon>T4MVC.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
-    <Compile Include="Models\AdalTokenCache.cs" />
     <Compile Include="Models\ApiControllerModels.cs" />
+    <Compile Include="Models\CsvImportViewModel.cs" />
     <Compile Include="Models\GeneralViewModels.cs" />
     <Compile Include="Models\MenuViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -328,6 +327,7 @@
     </Compile>
     <Compile Include="Windsor\Installers\ControllerInstaller.cs" />
     <Compile Include="Windsor\Installers\DalInstaller.cs" />
+    <Compile Include="Windsor\Installers\ServicesInstaller.cs" />
     <Compile Include="Windsor\Lifestyles\HybridScopeAccessor.cs" />
     <Compile Include="Windsor\Lifestyles\TransientScopeAccessor.cs" />
     <Compile Include="Windsor\PerWebRequestLifestyleModuleUtils.cs" />
@@ -424,6 +424,7 @@
     <Content Include="Views\Home\Public.cshtml" />
     <Content Include="Views\Shared\MainMenu.cshtml" />
     <Content Include="Views\Error\ServerError.cshtml" />
+    <Content Include="Views\Admin\_UploadCsv.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -432,6 +433,10 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BSSiseveeb.ApplicationServices\BSSiseveeb.ApplicationServices.csproj">
+      <Project>{b66ac5a7-c7b9-4f0e-acd8-10015251809b}</Project>
+      <Name>BSSiseveeb.ApplicationServices</Name>
+    </ProjectReference>
     <ProjectReference Include="..\BSSiseveeb.Core\BSSiseveeb.Core.csproj">
       <Project>{b6b87063-65a3-40e7-807b-bd97ced8cd73}</Project>
       <Name>BSSiseveeb.Core</Name>

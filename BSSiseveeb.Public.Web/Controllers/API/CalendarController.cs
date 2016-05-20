@@ -2,7 +2,6 @@
 using BSSiseveeb.Core.Dto;
 using BSSiseveeb.Core.Mappers;
 using BSSiseveeb.Public.Web.Attributes;
-using BSSiseveeb.Public.Web.Controllers.API.Helpers;
 using BSSiseveeb.Public.Web.Models;
 using System;
 using System.Collections.Generic;
@@ -40,14 +39,13 @@ namespace BSSiseveeb.Public.Web.Controllers.API
                 .AsDto());
         }
 
-        
         [HttpPost]
         [AuthorizeApi(AccessRights.Standard)]
         public IHttpActionResult SetVacation(VacationModel model)
         {
             var id = CurrentUserId;
-            var currentUserVacations = VacationRepository.Where(x => x.EmployeeId == id)
-                                .Where(x => x.Status != VacationStatus.Declined || x.Status != VacationStatus.Retired)
+            var currentUserVacations = VacationRepository.Where(x => x.EmployeeId == id && x.StartDate.Year == DateTime.Now.Year && x.Status == VacationStatus.Declined && x.Status != VacationStatus.Retired)
+                                .Select(x => x.Days)
                                 .ToList();
 
             int days = (int)model.End.Subtract(model.Start).TotalDays + 1;
@@ -64,26 +62,24 @@ namespace BSSiseveeb.Public.Web.Controllers.API
                 return BadRequest("ERROR: Pole piisavalt kasutamata puhkusepäevi");
             }
 
-
             if (model.Comment?.Length > 250)
             {
                 return BadRequest("ERROR: Lisainfo väljal ei tohi olla rohkem kui 250 tähemärki");
             }
 
 
-            if (days == 14 || days <= 7)
+            int[] vacationLimits = new int[] { 1, 2, 3, 4, 5, 6, 7, 14 };
+            int[][] specificVacationLimits = new int[][] { new int[] { 14, 1 }, new int[] { 7, 1 } };
+
+
+            if (vacationLimits.Contains(days))
             {
-                var checkForFourteen = currentUserVacations.Where(x => x.Days == 14 && x.StartDate.Year == DateTime.Now.Year).ToList();
-                var checkForSeven = currentUserVacations.Where(x => x.Days == 7 && x.StartDate.Year == DateTime.Now.Year).ToList();
-
-                if (checkForFourteen.Any() && days == 14)
+                foreach (var limit in specificVacationLimits)
                 {
-                    return BadRequest("ERROR: Teil on juba sel aastal olnud/paigas puhkus pikkusega 14 päeva");
-                }
-
-                if (checkForSeven.Any() && days == 7)
-                {
-                    return BadRequest("ERROR: Teil on juba sel aastal olnud/paigas puhkus pikkusega 7 päeva");
+                    if (currentUserVacations.Where(x => x == limit[0]).Count() >= limit[1] && days == limit[0])
+                    {
+                        return BadRequest($"ERROR: Aastas on lubatud ainult {limit[1]} puhkus pikkusega {limit[0]} päeva.");
+                    }
                 }
 
                 employee.VacationDays -= days;
@@ -104,7 +100,7 @@ namespace BSSiseveeb.Public.Web.Controllers.API
                 VacationRepository.Commit();
 
                 var emails = EmployeeRepository.Where(x => x.VacationMessages == true && x.Role.Rights.HasFlag(AccessRights.Vacations)).Select(x => x.Email).ToList();
-                EmailHelper.VacationRequested(vacation, emails);
+                EmailService.VacationRequested(vacation, emails);
 
                 return Ok();
             }

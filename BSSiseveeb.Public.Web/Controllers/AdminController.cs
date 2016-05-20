@@ -135,18 +135,13 @@ namespace BSSiseveeb.Public.Web.Controllers
         [AuthorizeLevel(AccessRights.Users)]
         public virtual async Task<ActionResult> SyncUsers()
         {
-
-            Uri servicePointUri = new Uri(AuthConfig.GraphResourceId);
-            Uri serviceRoot = new Uri(servicePointUri, AuthConfig.TenantId);
-            string token = await GetTokenForApplication();
+            string token = await ADService.GetTokenForApplication();
             if (token == null)
             {
                 return RedirectToAction("SignIn", MVC.Account.Name);
             }
 
-            ActiveDirectoryClient activeDirectoryClient = new ActiveDirectoryClient(serviceRoot, () => Task.FromResult(token));
-
-            var result = await activeDirectoryClient.Users.ExecuteAsync();
+            var result = await ADService.GetUsers();
             IEnumerable<IUser> users = result.CurrentPage.ToList();
 
             var myId = CurrentUserId;
@@ -168,7 +163,6 @@ namespace BSSiseveeb.Public.Web.Controllers
                 VacationDays = 28
             });
 
-            //var newUsers = appUsers.Where(x => !currentEmployees.Any(e => x.Id == x.Id));
             var newUsers = appUsers.Where(x => !currentEmployees.Contains(x.Id));
 
             EmployeeRepository.AddRange(newUsers);
@@ -176,6 +170,36 @@ namespace BSSiseveeb.Public.Web.Controllers
             EmployeeRepository.Commit();
 
             return View(MVC.Admin.Views.EditEmployees, new WorkersViewModel() { Employees = EmployeeRepository.AsDto() });
+        }
+
+        [HttpPost]
+        [AuthorizeLevel(AccessRights.Users)]
+        public virtual ActionResult ParseCsv(CsvImportViewModel model)
+        {
+            var parsedEmployees = CsvImportService.parseEmployees(model.CsvFile.InputStream);
+
+            var employees = EmployeeRepository.ToList();
+            foreach (var parsedEmployee in parsedEmployees)
+            {
+                try
+                {
+                    var employee = employees.Single(x => x.Name == parsedEmployee.Name);
+                    employee.Birthdate = parsedEmployee.Birthdate;
+                    employee.ContractStart = parsedEmployee.ContractStart;
+                    employee.SocialSecurityID = parsedEmployee.SocialSecurityID;
+                    employee.PhoneNumber = parsedEmployee.PhoneNumber;
+                    employee.Skype = parsedEmployee.Skype;
+                    employee.Email = parsedEmployee.Email;
+                    EmployeeRepository.SaveOrUpdate(employee);
+                }
+                catch (Exception)
+                {
+                    continue;
+                }
+            }
+            EmployeeRepository.Commit();
+
+            return (View(MVC.Admin.Views.EditEmployees, new WorkersViewModel() { Employees = EmployeeRepository.AsDto() }));
         }
     }
 }
